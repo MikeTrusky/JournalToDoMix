@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace JournalToDoMix.Models
 {
-    public class Action
+    public class Activity
     {
         public int Id { get; set; }
         [Required]
