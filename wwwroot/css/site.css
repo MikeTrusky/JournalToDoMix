@@ -20,3 +20,23 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.activities-table-caption {
+    font-size: 1.5rem;
+    color: black;
+    margin-bottom: 10px;
+}
+
+.activities-table-fixed {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.activities-table-fixed th, .activities-table-fixed td {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.activities-table-fixed th:nth-child(2){
+    width: 30%;
+}

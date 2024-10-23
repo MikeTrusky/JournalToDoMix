@@ -7,33 +7,18 @@
 <div class="container text-center mb-3">
     <a asp-controller="Activities" asp-action="Add" class="btn btn-primary">Add new action</a>
 </div>
-<div class="container">
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.First().Title)</th>
-                <th>@Html.DisplayNameFor(model => model.First().Description)</th>
-                <th>@Html.DisplayNameFor(model => model.First().IsCompleted)</th>
-                <th>@Html.DisplayNameFor(model => model.First().StartedAt)</th>
-                <th>@Html.DisplayNameFor(model => model.First().DurationPlanned)</th>
-                <th/>
-            </tr>
-            @foreach(var action in Model)
-            {
-                <tr>
-                    <td>@action.Title</td>
-                    <td>@action.Description</td>
-                    <td>@(action.IsCompleted ? "Completed" : "Not completed")</td>
-                    <td>@action.StartedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                    <td>@action.DurationPlanned.ToString(@"hh\:mm")</td>                    
-                    <td>
-                        <div class="justify-content-center d-flex">
-                            <a asp-controller="Activities" asp-action="Edit" asp-route-id="@action.Id" class="btn btn-secondary me-2 w-50">Edit</a>
-                            <a asp-controller="Activities" asp-action="Delete" asp-route-id="@action.Id" class="btn btn-danger w-50">Delete</a>
-                        </div>
-                    </td>                        
-                </tr>
-            }
-        </table>
-    </div>
-</div>
+
+@{
+    ViewBag.Caption = "Planned Activities";
+}
+<partial name="_ActivitiesTable" model="ViewBag.PlannedActivities"/>
+
+@{
+    ViewBag.Caption = "Current Activities";
+}
+<partial name="_ActivitiesTable" model="ViewBag.CurrentActivities" />
+
+@{
+    ViewBag.Caption = "Previous Activities";
+}
+<partial name="_ActivitiesTable" model="ViewBag.PreviousActivities" />
