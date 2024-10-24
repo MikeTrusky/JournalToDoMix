@@ -9,16 +9,19 @@
 </div>
 
 @{
-    ViewBag.Caption = "Planned Activities";
+    ViewBag.Caption = "Planned Activities";    
+    ViewBag.Current = false;
 }
 <partial name="_ActivitiesTable" model="ViewBag.PlannedActivities"/>
 
 @{
     ViewBag.Caption = "Current Activities";
+    ViewBag.Current = true;
 }
 <partial name="_ActivitiesTable" model="ViewBag.CurrentActivities" />
 
 @{
     ViewBag.Caption = "Previous Activities";
+    ViewBag.Current = false;
 }
 <partial name="_ActivitiesTable" model="ViewBag.PreviousActivities" />

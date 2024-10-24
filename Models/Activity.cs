@@ -14,7 +14,7 @@ namespace JournalToDoMix.Models
         public bool IsCompleted { get; set; }
         [DisplayName("Started at")]
         public DateTime StartedAt { get; set; }
-        [DisplayName("Duration planned")]
+        [DisplayName("Duration")]
         public TimeSpan DurationPlanned { get; set; }
     }
 }

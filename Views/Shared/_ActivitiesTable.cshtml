@@ -2,6 +2,7 @@
 
 @{
     var caption = ViewBag.Caption ?? "Activities";
+    var current = ViewBag.Current ?? false;
 }
 
 <div class="container">
@@ -22,7 +23,18 @@
                     <td>@action.Title</td>
                     <td>@action.Description</td>
                     <td>@action.StartedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                    <td>@action.DurationPlanned.ToString(@"hh\:mm")</td>
+                    @if (current)
+                    {
+                        <td data-started-at="@action.StartedAt.ToString("yyy-MM-ddTHH:mm:ss")"
+                            data-duration="@action.DurationPlanned.TotalSeconds"
+                            class="time-elapsed">
+                            00:00:00
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@action.DurationPlanned.ToString(@"hh\:mm")</td>
+                    }                    
                     <td>
                         <div class="justify-content-center d-flex">
                             <a asp-controller="Activities" asp-action="Edit" asp-route-id="@action.Id" class="btn btn-secondary me-2 w-50">Edit</a>
@@ -34,3 +46,55 @@
         </table>
     </div>
 </div>
+
+<script>
+    let isReloading = false;
+
+    function updateTimeElapsed(){
+        const rows = document.querySelectorAll('.time-elapsed');
+
+        rows.forEach(function (row){
+            const startedAt = new Date(row.getAttribute('data-started-at'));
+            const totalDuration = parseInt(row.getAttribute('data-duration'), 10);
+
+            const now = new Date();
+
+            const elapsedSeconds = Math.floor((now - startedAt) / 1000);
+
+            const remainingSeconds = totalDuration - elapsedSeconds;
+
+            if (remainingSeconds <= 0) {
+                row.textContent = "Completed";
+                if(!isReloading){
+                    isReloading = true;
+
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                }
+            }
+            else
+            {
+                const hoursElapsed = Math.floor(elapsedSeconds / 3600);
+                const minutesElapsed = Math.floor((elapsedSeconds % 3600) / 60);
+                const secondsElapsed = elapsedSeconds % 60;
+                
+                const hoursRemaining = Math.floor(remainingSeconds / 3600);
+                const minutesRemaining = Math.floor((remainingSeconds % 3600) / 60);
+                const secondsRemaining = remainingSeconds % 60;
+                
+                const formattedElapsedTime =
+                    `${hoursElapsed.toString().padStart(2, '0')}:${minutesElapsed.toString().padStart(2, '0')}:${secondsElapsed.toString().padStart(2, '0')}`;
+
+                const formattedRemainingTime =
+                    `${hoursRemaining.toString().padStart(2, '0')}:${minutesRemaining.toString().padStart(2, '0')}:${secondsRemaining.toString().padStart(2, '0')}`;
+                
+                row.textContent = `${formattedElapsedTime} (${formattedRemainingTime})`;
+            }
+        });
+    }
+
+    setInterval(updateTimeElapsed, 1000);
+
+    document.addEventListener("DOMContentLoaded", updateTimeElapsed);
+</script>
