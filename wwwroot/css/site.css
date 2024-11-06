@@ -1,29 +1,29 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 .activities-table-caption {
     font-size: 1.5rem;
-    color: dodgerblue;    
+    color: dodgerblue;
     margin-bottom: 10px;
 }
 
@@ -37,6 +37,35 @@ body {
     white-space: nowrap;
 }
 
-.activities-table-fixed th:nth-child(2){
+.activities-table-fixed th:nth-child(2) {
     width: 30%;
+}
+
+.timeline-week-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+}
+
+.timeline-week {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    align-items: flex-end; /* Daty s¹ wyrównane do do³u */
+    position: relative;
+}
+
+.timeline-day-line {
+    width: 100%; /* Ca³a szerokoœæ dnia */
+    height: 2px;
+    background-color: white;
+    margin: 10px 0; /* Odstêp miêdzy aktywnoœci¹ a dat¹ */
+}
+
+.timeline-day {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    position: relative;    
 }

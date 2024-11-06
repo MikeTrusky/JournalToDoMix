@@ -1,6 +1,5 @@
 using JournalToDoMix.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace JournalToDoMix.Controllers
 {
