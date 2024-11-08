@@ -1,40 +1,44 @@
 ﻿<div class="timeline-week-container">
     <div class="container">
-        <div class="timeline-week">
-            @foreach (var day in ViewBag.DaysOfWeek)
-            {
-                <div class="timeline-day">
-                    @if (ViewBag.EarliestActivitiesByDay[day] != null)
-                    {
-                        var activity = ViewBag.EarliestActivitiesByDay[day];
+        <div class="timeline-week-wrapper">
+            <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="-7" class="me-3 bi bi-arrow-left-circle timeline-arrow"></a>
+            <div class="timeline-week">
+                @foreach (var day in ViewBag.DaysOfWeek)
+                {
+                    <div class="timeline-day">
+                        @if (ViewBag.EarliestActivitiesByDay[day] != null)
+                        {
+                            var activity = ViewBag.EarliestActivitiesByDay[day];
 
-                        <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
-                            <div class="card-header">@activity.Title</div>
-                            <div class="card-body">
-                                <h4 class="card-title">@activity.Description</h4>
-                                <p>
-                                    @activity.StartedAt.ToString("HH:mm") -
-                                    @activity.StartedAt.Add(activity.DurationPlanned).ToString("HH:mm")
-                                </p>
+                            <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
+                                <div class="card-header">@activity.Title</div>
+                                <div class="card-body">
+                                    <h4 class="card-title">@activity.Description</h4>
+                                    <p>
+                                        @activity.StartedAt.ToString("HH:mm") -
+                                        @activity.StartedAt.Add(activity.DurationPlanned).ToString("HH:mm")
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
-                            <div class="card-header">No activity</div>
-                            <div class="card-body">
-                                <h4 class="card-title"></h4>
+                        }
+                        else
+                        {
+                            <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
+                                <div class="card-header">No activity</div>
+                                <div class="card-body">
+                                    <h4 class="card-title"></h4>
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
 
-                    <div class="timeline-day-line"></div>
+                        <div class="timeline-day-line"></div>
 
-                    <h6>@day.ToString("dddd")</h6>
-                    <h6>@day.ToString("dd.MM")</h6>
-                </div>
-            }
+                        <h6>@day.ToString("dddd")</h6>
+                        <h6>@day.ToString("dd.MM")</h6>
+                    </div>
+                }
+            </div>
+            <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="7" class="ms-3 bi bi-arrow-right-circle timeline-arrow"></a>
         </div>
     </div>
 </div>
