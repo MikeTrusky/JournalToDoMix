@@ -29,6 +29,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Activities}/{action=Index}/{id?}");
+    pattern: "{controller=Timeline}/{action=Index}/{id?}");
 
 app.Run();
