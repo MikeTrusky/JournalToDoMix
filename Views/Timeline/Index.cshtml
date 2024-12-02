@@ -1,7 +1,14 @@
 ﻿<div class="timeline-week-container">
     <div class="container">
         <div class="timeline-week-wrapper">
-            <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="-7" class="me-3 bi bi-arrow-left-circle timeline-arrow"></a>
+            @if (Enumerable.Count(ViewBag.DaysOfWeek) > 1)
+            {
+                <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="-1" asp-route-daysToShow="7" class="me-3 bi bi-arrow-left-circle timeline-arrow"></a>
+            }
+            else
+            {
+                <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="-1" asp-route-daysToShow="1" class="me-3 bi bi-arrow-left-circle timeline-arrow"></a>
+            }
             <div class="timeline-week">
                 @foreach (var day in ViewBag.DaysOfWeek)
                 {
@@ -38,7 +45,27 @@
                     </div>
                 }
             </div>
-            <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="7" class="ms-3 bi bi-arrow-right-circle timeline-arrow"></a>
+            @if (Enumerable.Count(ViewBag.DaysOfWeek) > 1)
+            {
+                <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="1" asp-route-daysToShow="7" class="ms-3 bi bi-arrow-right-circle timeline-arrow"></a>
+            }
+            else
+            {
+                <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="1" asp-route-daysToShow="1" class="ms-3 bi bi-arrow-right-circle timeline-arrow"></a>
+            }            
         </div>
+    </div>
+    <div class="container">
+        <div class="timeline-dropdown-container">
+            <div class="btn-group">
+                <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    Change display
+                </button>
+                <ul class="dropdown-menu w-100">
+                    <li><a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysToShow="7" class="dropdown-item">Week</a></li>
+                    <li><a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysToShow="1" class="dropdown-item">Day</a></li>
+                </ul>           
+            </div>            
+        </div>        
     </div>
 </div>

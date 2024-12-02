@@ -14,7 +14,7 @@ namespace JournalToDoMix.Controllers
             _logger = logger;
             _dbContext = dbContext;
         }
-        public IActionResult Index(string? startOfWeek, int daysOfWeekToAdd = 0)
+        public IActionResult Index(string? startOfWeek, int daysOfWeekToAdd = 0, int daysToShow = 7)
         {
             DateTime startOfCurrentWeek;
             if(ModelState.IsValid && !string.IsNullOrEmpty(startOfWeek) && DateTime.TryParse(startOfWeek, CultureInfo.InvariantCulture, out var parsedData))
@@ -26,23 +26,24 @@ namespace JournalToDoMix.Controllers
                 startOfCurrentWeek = GetStartOfCurrentWeek();
             }
 
+            daysOfWeekToAdd *= daysToShow;
             startOfCurrentWeek = startOfCurrentWeek.AddDays(daysOfWeekToAdd);
 
-            ViewBag.DaysOfWeek = GetDaysOfWeek(startOfCurrentWeek);
-            ViewBag.EarliestActivitiesByDay = GetEarliestActivitiesForWeek(startOfCurrentWeek, ViewBag.DaysOfWeek);
+            ViewBag.DaysOfWeek = GetDaysOfWeek(startOfCurrentWeek, daysToShow);
+            ViewBag.EarliestActivitiesByDay = GetEarliestActivitiesForWeek(startOfCurrentWeek, ViewBag.DaysOfWeek, daysToShow);
 
             return View();
-        }        
-        private List<DateTime> GetDaysOfWeek(DateTime startOfWeek)
+        }
+        private List<DateTime> GetDaysOfWeek(DateTime startOfWeek, int daysToShow)
         {
-            return Enumerable.Range(0, 7)
+            return Enumerable.Range(0, daysToShow)
                              .Select(offset => startOfWeek.AddDays(offset))
                              .ToList();
         }
-        private Dictionary<DateTime, Activity?> GetEarliestActivitiesForWeek(DateTime startOfWeek, List<DateTime> daysOfWeek)
+        private Dictionary<DateTime, Activity?> GetEarliestActivitiesForWeek(DateTime startOfWeek, List<DateTime> daysOfWeek, int daysToShow)
         {
             var activities = _dbContext.Activities
-                                       .Where(a => a.StartedAt >= startOfWeek && a.StartedAt < startOfWeek.AddDays(7))
+                                       .Where(a => a.StartedAt >= startOfWeek && a.StartedAt < startOfWeek.AddDays(daysToShow))
                                        .ToList();
 
             return daysOfWeek.ToDictionary(
