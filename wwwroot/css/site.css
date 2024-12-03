@@ -64,7 +64,7 @@ body {
     flex: 1;
     text-align: center;        
     padding: 10px;
-    position: relative;
+    position: relative;    
 }
 
 .timeline-week-wrapper {
@@ -86,7 +86,19 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    gap: 100px;
-    width: 100%;    
     padding-top: 30px;
+}
+
+.day-cards {
+    position: relative;
+    overflow: visible;
+}
+
+.custom-card {
+    position: relative;
+    margin-bottom: -70px;    
+}
+
+.custom-card:nth-child(n+2) {
+    margin-bottom: 0px;
 }

@@ -30,7 +30,7 @@ namespace JournalToDoMix.Controllers
             startOfCurrentWeek = startOfCurrentWeek.AddDays(daysOfWeekToAdd);
 
             ViewBag.DaysOfWeek = GetDaysOfWeek(startOfCurrentWeek, daysToShow);
-            ViewBag.EarliestActivitiesByDay = GetEarliestActivitiesForWeek(startOfCurrentWeek, ViewBag.DaysOfWeek, daysToShow);
+            ViewBag.ActivitiesByDay = GetActivitiesForWeek(startOfCurrentWeek, ViewBag.DaysOfWeek, daysToShow);
 
             return View();
         }
@@ -40,7 +40,7 @@ namespace JournalToDoMix.Controllers
                              .Select(offset => startOfWeek.AddDays(offset))
                              .ToList();
         }
-        private Dictionary<DateTime, Activity?> GetEarliestActivitiesForWeek(DateTime startOfWeek, List<DateTime> daysOfWeek, int daysToShow)
+        private Dictionary<DateTime, List<Activity>> GetActivitiesForWeek(DateTime startOfWeek, List<DateTime> daysOfWeek, int daysToShow)
         {
             var activities = _dbContext.Activities
                                        .Where(a => a.StartedAt >= startOfWeek && a.StartedAt < startOfWeek.AddDays(daysToShow))
@@ -50,7 +50,7 @@ namespace JournalToDoMix.Controllers
                    day => day,
                    day => activities.Where(a => a.StartedAt.Date == day.Date)
                                     .OrderBy(a => a.StartedAt)
-                                    .FirstOrDefault());
+                                    .ToList());
         }
         private DateTime GetStartOfCurrentWeek()
         {

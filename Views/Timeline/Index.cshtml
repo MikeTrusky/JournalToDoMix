@@ -13,19 +13,22 @@
                 @foreach (var day in ViewBag.DaysOfWeek)
                 {
                     <div class="timeline-day">
-                        @if (ViewBag.EarliestActivitiesByDay[day] != null)
+                        @if (Enumerable.Count(ViewBag.ActivitiesByDay[day]) > 0)
                         {
-                            var activity = ViewBag.EarliestActivitiesByDay[day];
-
-                            <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
-                                <div class="card-header">@activity.Title</div>
-                                <div class="card-body">
-                                    <h4 class="card-title">@activity.Description</h4>
-                                    <p>
-                                        @activity.StartedAt.ToString("HH:mm") -
-                                        @activity.StartedAt.Add(activity.DurationPlanned).ToString("HH:mm")
-                                    </p>
-                                </div>
+                            <div class="day-cards">
+                                @for (int i = 0; i < Enumerable.Count(ViewBag.ActivitiesByDay[day]); i++)
+                                {                                    
+                                    <div class="card text-white bg-primary border-4 border-success custom-card" style="max-width: 20rem; z-index: @(i);">
+                                        <div class="card-header">@ViewBag.ActivitiesByDay[day][i].Title</div>
+                                        <div class="card-body">
+                                            @* <h4 class="card-title">@activity.Description</h4> *@
+                                            <p>
+                                                @ViewBag.ActivitiesByDay[day][i].StartedAt.ToString("HH:mm") -
+                                                @ViewBag.ActivitiesByDay[day][i].StartedAt.Add(ViewBag.ActivitiesByDay[day][i].DurationPlanned).ToString("HH:mm")
+                                            </p>
+                                        </div>
+                                    </div>
+                                }              
                             </div>
                         }
                         else
