@@ -1,6 +1,6 @@
 ﻿using JournalToDoMix.Models;
+using JournalToDoMix.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace JournalToDoMix.Controllers
 {
@@ -8,65 +8,25 @@ namespace JournalToDoMix.Controllers
     {
         private readonly ILogger<ActivitiesController> _logger;
         private readonly ApplicationDbContext _dbContext;
+        private readonly IActivitiesServices _activitiesServices;
 
-        public ActivitiesController(ILogger<ActivitiesController> logger, ApplicationDbContext dbContext)
+        public ActivitiesController(ILogger<ActivitiesController> logger, ApplicationDbContext dbContext, IActivitiesServices activitiesServices)
         {
             _logger = logger;
             _dbContext = dbContext;
+            _activitiesServices = activitiesServices;
         }
         public IActionResult Index()
         {
             var now = DateTime.Now;
 
-            UpdateActivitiesCompletedStatus(now);
+            _activitiesServices.UpdateActivitiesCompletedStatus(now);
 
-            var plannedActivities = _dbContext.Activities
-                .Where(a => a.StartedAt > now)
-                .AsNoTracking()
-                .ToList();
-
-            var currentActivities = _dbContext.Activities
-                .Where(a => a.StartedAt <= now && !a.IsCompleted)
-                .AsNoTracking()
-                .AsEnumerable()
-                .Where(a => a.StartedAt.Add(a.DurationPlanned) >= now)
-                .ToList();
-
-            var previousActivities = _dbContext.Activities
-                .Where(a => a.IsCompleted ||
-                            (!plannedActivities.Select(p => p.Id).Contains(a.Id) &&
-                             !currentActivities.Select(c => c.Id).Contains(a.Id)))
-                .AsNoTracking()
-                .ToList();
-
-            ViewBag.PlannedActivities = plannedActivities;
-            ViewBag.CurrentActivities = currentActivities;
-            ViewBag.PreviousActivities = previousActivities;
+            ViewBag.PlannedActivities = _activitiesServices.GetPlannedActivities(now);
+            ViewBag.CurrentActivities = _activitiesServices.GetCurrentActivities(now);
+            ViewBag.PreviousActivities = _activitiesServices.GetPreviousActivities(now);
 
             return View();
-        }
-
-        private void UpdateActivitiesCompletedStatus(DateTime now)
-        {
-            var incompletedActivities = _dbContext.Activities
-                            .Where(a => !a.IsCompleted)
-                            .ToList();
-
-            bool hasChange = false;
-
-            foreach (var activity in incompletedActivities)
-            {
-                var endTime = activity.StartedAt.Add(activity.DurationPlanned);
-                if (endTime < now)
-                {
-                    activity.IsCompleted = true;
-                    _dbContext.Activities.Update(activity);
-                    hasChange = true;
-                }
-            }
-
-            if (hasChange)
-                _dbContext.SaveChanges();
         }
         #region Add new actions
         public IActionResult Add()
