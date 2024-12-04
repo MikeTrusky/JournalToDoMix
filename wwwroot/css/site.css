@@ -102,3 +102,13 @@ body {
 .custom-card:nth-child(n+2) {
     margin-bottom: 0px;
 }
+
+.custom-card:nth-child(n+2):hover {
+    margin-bottom: 0px;
+    transform: scale(1.1);
+}
+
+.custom-card:hover {
+    margin-bottom: -20px;
+    transform: scale(1.1);
+}
