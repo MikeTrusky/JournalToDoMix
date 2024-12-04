@@ -1,3 +1,4 @@
+/*#region MainCss*/
 html {
     font-size: 14px;
     position: relative;
@@ -17,7 +18,9 @@ html {
 body {
     margin-bottom: 60px;
 }
+/*#endregion*/
 
+/*#region ActivitiesTable*/
 .activities-table-caption {
     font-size: 1.5rem;
     color: dodgerblue;
@@ -37,23 +40,31 @@ body {
 .activities-table-fixed th:nth-child(2) {
     width: 30%;
 }
+/*#endregion*/
 
+/*#region TimelineWeek*/
 .timeline-week-container {
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
     justify-content: center;
     height: 80vh;
 }
 
 .timeline-week {
     display: flex;
-    width: 100%;
-    justify-content: space-around;
+    width: 100%;    
     align-items: flex-end;
     position: relative;
 }
 
 .timeline-day-line {
+    width: 110%;
+    height: 2px;
+    background-color: white;
+    margin: 10px 0;
+}
+
+.timeline-day-one-line {
     width: 100%;
     height: 2px;
     background-color: white;
@@ -61,24 +72,33 @@ body {
 }
 
 .timeline-day {
-    flex: 1;
-    text-align: center;        
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     padding: 10px;
-    position: relative;    
+    position: relative;
+}
+
+.timeline-day .card {
+    width: 100%;
 }
 
 .timeline-week-wrapper {
     display: flex;
-    align-items: center;    
+    align-items: end;
+    height: 200px;
 }
 
 .timeline-arrow {
     font-size: 2rem;
     cursor: pointer;
+    padding-bottom: 3rem;
 }
 
 .timeline-arrow:hover {
-    transform: scale(1.1);
+    transform: scale(1.2);
     color: #0056b3;
 }
 
@@ -86,9 +106,11 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    padding-top: 30px;
+    padding-top: 40px;
 }
+/*#endregion*/
 
+/*#region DayCards*/
 .day-cards {
     position: relative;
     overflow: visible;
@@ -96,14 +118,14 @@ body {
 
 .custom-card {
     position: relative;
-    margin-bottom: -70px;    
+    margin-bottom: -70px;
 }
 
-.custom-card:nth-child(n+2) {
+.custom-card:last-child {
     margin-bottom: 0px;
 }
 
-.custom-card:nth-child(n+2):hover {
+.custom-card:last-child:hover {
     margin-bottom: 0px;
     transform: scale(1.1);
 }
@@ -112,3 +134,4 @@ body {
     margin-bottom: -20px;
     transform: scale(1.1);
 }
+/*#endregion*/

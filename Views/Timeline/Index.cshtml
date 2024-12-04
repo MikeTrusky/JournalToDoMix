@@ -33,7 +33,7 @@
                         }
                         else
                         {
-                            <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
+                            <div class="card text-white bg-dark" style="max-width: 20rem;">
                                 <div class="card-header">No activity</div>
                                 <div class="card-body">
                                     <h4 class="card-title"></h4>
@@ -41,7 +41,14 @@
                             </div>
                         }
 
-                        <div class="timeline-day-line"></div>
+                        @if (Enumerable.Count(ViewBag.DaysOfWeek) > 1)
+                        {
+                            <div class="timeline-day-line"></div>
+                        }   
+                        else
+                        {
+                            <div class="timeline-day-one-line"></div>
+                        }
 
                         <h6>@day.ToString("dddd")</h6>
                         <h6>@day.ToString("dd.MM")</h6>
@@ -64,7 +71,7 @@
                 <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown">
                     Change display
                 </button>
-                <ul class="dropdown-menu w-100">
+                <ul class="dropdown-menu w-100" style="text-align: center;">
                     <li><a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysToShow="7" class="dropdown-item">Week</a></li>
                     <li><a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysToShow="1" class="dropdown-item">Day</a></li>
                 </ul>           
