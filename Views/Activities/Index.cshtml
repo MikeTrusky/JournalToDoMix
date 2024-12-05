@@ -4,24 +4,22 @@
     ViewData["Title"] = "Activities";
 }
 
-<div class="container text-center mb-3">
-    <a asp-controller="Activities" asp-action="Add" class="btn btn-primary">Add new action</a>
+<div class="activities-buttons-container">
+    <div class="container col-5 text-start">
+        <a asp-controller="Activities" asp-action="Add" class="btn btn-lg btn-primary">Add new action</a>
+    </div>
+    <div class="container text-start">
+        <div class="btn-group">
+            <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                Change display
+            </button>
+            <ul class="dropdown-menu w-100" style="text-align: center;">
+                <li><a asp-controller="Activities" asp-action="Index" asp-route-activitiesType="Planned Activities" class="dropdown-item">Planned</a></li>
+                <li><a asp-controller="Activities" asp-action="Index" asp-route-activitiesType="Current Activities" class="dropdown-item">Current</a></li>
+                <li><a asp-controller="Activities" asp-action="Index" asp-route-activitiesType="Previous Activities" class="dropdown-item">Previous</a></li>
+            </ul>
+        </div>
+    </div>
 </div>
 
-@{
-    ViewBag.Caption = "Planned Activities";    
-    ViewBag.Current = false;
-}
-<partial name="_ActivitiesTable" model="ViewBag.PlannedActivities"/>
-
-@{
-    ViewBag.Caption = "Current Activities";
-    ViewBag.Current = true;
-}
-<partial name="_ActivitiesTable" model="ViewBag.CurrentActivities" />
-
-@{
-    ViewBag.Caption = "Previous Activities";
-    ViewBag.Current = false;
-}
-<partial name="_ActivitiesTable" model="ViewBag.PreviousActivities" />
+<partial name="_ActivitiesTable" model="ViewBag.Activities" />

@@ -16,15 +16,29 @@ namespace JournalToDoMix.Controllers
             _dbContext = dbContext;
             _activitiesServices = activitiesServices;
         }
-        public IActionResult Index()
+        public IActionResult Index(string activitiesType= "Current Activities")
         {
             var now = DateTime.Now;
 
             _activitiesServices.UpdateActivitiesCompletedStatus(now);
 
-            ViewBag.PlannedActivities = _activitiesServices.GetPlannedActivities(now);
-            ViewBag.CurrentActivities = _activitiesServices.GetCurrentActivities(now);
-            ViewBag.PreviousActivities = _activitiesServices.GetPreviousActivities(now);
+            switch (activitiesType)
+            {
+                case "Planned Activities":
+                    ViewBag.Current = false;
+                    ViewBag.Activities = _activitiesServices.GetPlannedActivities(now);
+                    break;
+                case "Current Activities":                    
+                    ViewBag.Current = true;
+                    ViewBag.Activities = _activitiesServices.GetCurrentActivities(now);
+                    break;
+                case "Previous Activities":
+                    ViewBag.Current = false;
+                    ViewBag.Activities = _activitiesServices.GetPreviousActivities(now);
+                    break;
+            }
+
+            ViewBag.Caption = activitiesType;
 
             return View();
         }

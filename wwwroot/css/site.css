@@ -40,8 +40,13 @@ body {
 .activities-table-fixed th:nth-child(2) {
     width: 30%;
 }
-/*#endregion*/
 
+.activities-buttons-container {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 5vh;
+}
+/*#endregion*/
 /*#region TimelineWeek*/
 .timeline-week-container {
     display: flex;
