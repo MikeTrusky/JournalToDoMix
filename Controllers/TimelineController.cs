@@ -1,5 +1,6 @@
 ﻿using JournalToDoMix.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace JournalToDoMix.Controllers
@@ -43,6 +44,8 @@ namespace JournalToDoMix.Controllers
         private Dictionary<DateTime, List<Activity>> GetActivitiesForWeek(DateTime startOfWeek, List<DateTime> daysOfWeek, int daysToShow)
         {
             var activities = _dbContext.Activities
+                                       .Include(t => t.ActivityTitle)
+                                       .Include(c => c.ActivityCategory)
                                        .Where(a => a.StartedAt >= startOfWeek && a.StartedAt < startOfWeek.AddDays(daysToShow))
                                        .ToList();
 

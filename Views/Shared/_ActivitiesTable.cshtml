@@ -11,7 +11,7 @@
             <caption class="text-center mb-2 activities-table-caption"><strong>@caption</strong></caption>
 
             <tr class="table-primary">
-                <th>@Html.DisplayNameFor(model => model.First().Title)</th>
+                <th>@Html.DisplayNameFor(model => model.First().ActivityTitle.Title)</th>
                 <th>@Html.DisplayNameFor(model => model.First().Description)</th>
                 <th>@Html.DisplayNameFor(model => model.First().StartedAt)</th>
                 <th>@Html.DisplayNameFor(model => model.First().DurationPlanned)</th>
@@ -20,8 +20,15 @@
             @foreach (var action in Model)
             {
                 <tr>
-                    <td>@action.Title</td>
-                    <td>@action.Description</td>
+                    <td>@action.ActivityTitle.Title</td>
+                    @if(action.Description != string.Empty && action.Description != null)
+                    {
+                        <td>@action.Description</td>
+                    }                        
+                    else
+                    {
+                        <td>@action.ActivityTitle.Description</td>
+                    }                    
                     <td>@action.StartedAt.ToString("yyyy-MM-dd HH:mm")</td>
                     @if (current)
                     {

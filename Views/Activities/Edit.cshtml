@@ -1,4 +1,4 @@
-﻿@model Activity
+﻿@model ActivityEditViewModel
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
@@ -7,6 +7,12 @@
         <label asp-for="Title" class="control-label"></label>
         <input asp-for="Title" class="form-control" />
         <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Category" class="control-label"></label>
+        <input asp-for="Category" class="form-control" />
+        <span asp-validation-for="Category" class="text-danger"></span>
     </div>
 
     <div class="form-group mb-2">

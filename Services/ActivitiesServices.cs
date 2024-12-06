@@ -15,6 +15,8 @@ namespace JournalToDoMix.Services
         public List<Activity> GetCurrentActivities(DateTime now)
         {
             return  _dbContext.Activities
+                    .Include(t => t.ActivityTitle)
+                    .Include(c => c.ActivityCategory)
                     .Where(a => a.StartedAt <= now && !a.IsCompleted)
                     .AsNoTracking()
                     .AsEnumerable()
@@ -25,6 +27,8 @@ namespace JournalToDoMix.Services
         public List<Activity> GetPlannedActivities(DateTime now)
         {
             return  _dbContext.Activities
+                    .Include(t => t.ActivityTitle)
+                    .Include(c => c.ActivityCategory)
                     .Where(a => a.StartedAt > now)
                     .AsNoTracking()
                     .ToList();
@@ -33,6 +37,8 @@ namespace JournalToDoMix.Services
         public List<Activity> GetPreviousActivities(DateTime now)
         {
             return  _dbContext.Activities
+                    .Include(t => t.ActivityTitle)
+                    .Include(c => c.ActivityCategory)
                     .Where(a => a.IsCompleted)
                     .AsNoTracking()
                     .ToList();
