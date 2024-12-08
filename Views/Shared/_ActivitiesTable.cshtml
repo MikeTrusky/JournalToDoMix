@@ -6,7 +6,7 @@
 }
 
 <div class="container">
-    <div class="table-responsive">
+    <div class="table-responsive" id="app">
         <table class="table table-bordered caption-top activities-table-fixed">
             <caption class="text-center mb-2 activities-table-caption"><strong>@caption</strong></caption>
 
@@ -21,27 +21,30 @@
             {
                 <tr>
                     <td>@action.ActivityTitle.Title</td>
-                    @if(action.Description != string.Empty && action.Description != null)
+                    @if (action.Description != string.Empty && action.Description != null)
                     {
                         <td>@action.Description</td>
-                    }                        
+                    }
                     else
                     {
                         <td>@action.ActivityTitle.Description</td>
-                    }                    
+                    }
                     <td>@action.StartedAt.ToString("yyyy-MM-dd HH:mm")</td>
                     @if (current)
-                    {
-                        <td data-started-at="@action.StartedAt.ToString("yyy-MM-ddTHH:mm:ss")"
-                            data-duration="@action.DurationPlanned.TotalSeconds"
-                            class="time-elapsed">
-                            00:00:00
+                    {                        
+                        <td>
+                            <span v-if="remainingTimes[@action.Id] !== undefined && remainingTimes[@action.Id] > 0">
+                                {{ formatTime(elapsedTimes[@action.Id]) }} ( {{ formatTime(remainingTimes[@action.Id]) }} )
+                            </span>                            
+                            <span v-else>
+                                Completed
+                            </span>
                         </td>
                     }
                     else
                     {
                         <td>@action.DurationPlanned.ToString(@"hh\:mm")</td>
-                    }                    
+                    }
                     <td>
                         <div class="justify-content-center d-flex">
                             <a asp-controller="Activities" asp-action="Edit" asp-route-id="@action.Id" class="btn btn-primary me-2 w-50">Edit</a>
@@ -55,53 +58,47 @@
 </div>
 
 <script>
-    let isReloading = false;
+    const { createApp } = Vue;
 
-    function updateTimeElapsed(){
-        const rows = document.querySelectorAll('.time-elapsed');
-
-        rows.forEach(function (row){
-            const startedAt = new Date(row.getAttribute('data-started-at'));
-            const totalDuration = parseInt(row.getAttribute('data-duration'), 10);
-
-            const now = new Date();
-
-            const elapsedSeconds = Math.floor((now - startedAt) / 1000);
-
-            const remainingSeconds = totalDuration - elapsedSeconds;
-
-            if (remainingSeconds <= 0) {
-                row.textContent = "Completed";
-                if(!isReloading){
-                    isReloading = true;
-
-                    setTimeout(function () {
-                        location.reload();
-                    }, 1000);
-                }
+    createApp({        
+        data() {
+            return {
+                elapsedTimes: {},
+                remainingTimes: {},
+                activities: @Html.Raw(Json.Serialize(Model.Select(activity => new
+                {
+                    id = activity.Id,
+                    startedAt = activity.StartedAt.ToString("yyyy-MM-ddTHH:mm:ss"),
+                    totalDuration = activity.DurationPlanned.TotalSeconds
+                })))
             }
-            else
-            {
-                const hoursElapsed = Math.floor(elapsedSeconds / 3600);
-                const minutesElapsed = Math.floor((elapsedSeconds % 3600) / 60);
-                const secondsElapsed = elapsedSeconds % 60;
-                
-                const hoursRemaining = Math.floor(remainingSeconds / 3600);
-                const minutesRemaining = Math.floor((remainingSeconds % 3600) / 60);
-                const secondsRemaining = remainingSeconds % 60;
-                
-                const formattedElapsedTime =
-                    `${hoursElapsed.toString().padStart(2, '0')}:${minutesElapsed.toString().padStart(2, '0')}:${secondsElapsed.toString().padStart(2, '0')}`;
+        },
+        methods: {         
+            calculateTimes() {
+                const now = new Date();
 
-                const formattedRemainingTime =
-                    `${hoursRemaining.toString().padStart(2, '0')}:${minutesRemaining.toString().padStart(2, '0')}:${secondsRemaining.toString().padStart(2, '0')}`;
-                
-                row.textContent = `${formattedElapsedTime} (${formattedRemainingTime})`;
+                this.activities.forEach(action => {
+                    const startedAt = new Date(action.startedAt);
+                    const totalDuration = parseInt(action.totalDuration, 10);
+
+                    const elapsedSeconds = Math.floor((now - startedAt) / 1000);
+                    const remainingSeconds = Math.max(0, totalDuration - elapsedSeconds);
+
+                    this.elapsedTimes[action.id] = elapsedSeconds;
+                    this.remainingTimes[action.id] = remainingSeconds;
+                });                
+            },
+            formatTime(seconds) {
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+
+                return  `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             }
-        });
-    }
-
-    setInterval(updateTimeElapsed, 1000);
-
-    document.addEventListener("DOMContentLoaded", updateTimeElapsed);
+        },
+        mounted() {  
+            this.calculateTimes();
+            setInterval(this.calculateTimes, 1000);
+        }
+    }).mount("#app");
 </script>
