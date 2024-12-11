@@ -106,17 +106,16 @@ namespace JournalToDoMix.Controllers
 
             return RedirectToAction("Index");
         }
-        //Test it - showing titles while typing
-        //public async Task<IActionResult> GetActivityTitles(string query)
-        //{
-        //    var titles = await _dbContext.ActivityTitles
-        //        .Where(t => t.Title.StartsWith(query))
-        //        .Select(t => t.Title)
-        //        .Take(10)
-        //        .ToListAsync();
+        [HttpGet]
+        public async Task<IActionResult> GetActivityTitles(string query)
+        {
+            var titles = await _dbContext.ActivityTitles
+                .Where(t => t.Title.StartsWith(query))
+                .Select(t => t.Title)
+                .ToListAsync();
 
-        //    return Json(titles);
-        //}
+            return Json(titles);
+        }
         #endregion
         #region Edit action
         public IActionResult Edit(int? id)

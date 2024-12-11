@@ -31,11 +31,11 @@
                     }
                     <td>@action.StartedAt.ToString("yyyy-MM-dd HH:mm")</td>
                     @if (current)
-                    {                        
+                    {
                         <td>
                             <span v-if="remainingTimes[@action.Id] !== undefined && remainingTimes[@action.Id] > 0">
                                 {{ formatTime(elapsedTimes[@action.Id]) }} ( {{ formatTime(remainingTimes[@action.Id]) }} )
-                            </span>                            
+                            </span>
                             <span v-else>
                                 Completed
                             </span>
@@ -57,48 +57,50 @@
     </div>
 </div>
 
-<script>
-    const { createApp } = Vue;
+@section scripts {
+    <script>
+        const { createApp } = Vue;
 
-    createApp({        
-        data() {
-            return {
-                elapsedTimes: {},
-                remainingTimes: {},
-                activities: @Html.Raw(Json.Serialize(Model.Select(activity => new
-                {
-                    id = activity.Id,
-                    startedAt = activity.StartedAt.ToString("yyyy-MM-ddTHH:mm:ss"),
-                    totalDuration = activity.DurationPlanned.TotalSeconds
-                })))
-            }
-        },
-        methods: {         
-            calculateTimes() {
-                const now = new Date();
-
-                this.activities.forEach(action => {
-                    const startedAt = new Date(action.startedAt);
-                    const totalDuration = parseInt(action.totalDuration, 10);
-
-                    const elapsedSeconds = Math.floor((now - startedAt) / 1000);
-                    const remainingSeconds = Math.max(0, totalDuration - elapsedSeconds);
-
-                    this.elapsedTimes[action.id] = elapsedSeconds;
-                    this.remainingTimes[action.id] = remainingSeconds;
-                });                
+        createApp({
+            data() {
+                return {
+                    elapsedTimes: {},
+                    remainingTimes: {},
+                    activities: @Html.Raw(Json.Serialize(Model.Select(activity => new
+                    {
+                        id = activity.Id,
+                        startedAt = activity.StartedAt.ToString("yyyy-MM-ddTHH:mm:ss"),
+                        totalDuration = activity.DurationPlanned.TotalSeconds
+                    })))
+                }
             },
-            formatTime(seconds) {
-                const hours = Math.floor(seconds / 3600);
-                const minutes = Math.floor((seconds % 3600) / 60);
-                const secs = seconds % 60;
+            methods: {
+                calculateTimes() {
+                    const now = new Date();
 
-                return  `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                    this.activities.forEach(action => {
+                        const startedAt = new Date(action.startedAt);
+                        const totalDuration = parseInt(action.totalDuration, 10);
+
+                        const elapsedSeconds = Math.floor((now - startedAt) / 1000);
+                        const remainingSeconds = Math.max(0, totalDuration - elapsedSeconds);
+
+                        this.elapsedTimes[action.id] = elapsedSeconds;
+                        this.remainingTimes[action.id] = remainingSeconds;
+                    });
+                },
+                formatTime(seconds) {
+                    const hours = Math.floor(seconds / 3600);
+                    const minutes = Math.floor((seconds % 3600) / 60);
+                    const secs = seconds % 60;
+
+                    return  `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                }
+            },
+            mounted() {
+                this.calculateTimes();
+                setInterval(this.calculateTimes, 1000);
             }
-        },
-        mounted() {  
-            this.calculateTimes();
-            setInterval(this.calculateTimes, 1000);
-        }
-    }).mount("#app");
-</script>
+        }).mount("#app");
+    </script>
+}

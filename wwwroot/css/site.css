@@ -47,6 +47,7 @@ body {
     margin-bottom: 5vh;
 }
 /*#endregion*/
+
 /*#region TimelineWeek*/
 .timeline-week-container {
     display: flex;
@@ -138,5 +139,45 @@ body {
 .custom-card:hover {
     margin-bottom: -20px;
     transform: scale(1.1);
+}
+/*#endregion*/
+
+/*#region AddingActivity*/
+.titlesDropdown {
+    position: absolute;
+    list-style: none;
+    margin: 0;    
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 2px solid #ccc;    
+    background-color: #fff;
+    color: #827c7c;
+    z-index: 1000;    
+}
+
+.titlesDropdown li {
+    padding: 10px 15px;    
+    cursor: pointer;
+}
+
+.titlesDropdown li:nth-child(2n+1) {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+.titlesDropdown li:first-child {
+    border-top: 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.titlesDropdown li:last-child {
+    border-top: 1px solid #ccc;
+    border-bottom: 0;
+}
+
+.titlesDropdown li:hover {
+    background-color: #007bff;
+    color: #fff;
 }
 /*#endregion*/
