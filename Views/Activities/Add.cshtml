@@ -5,10 +5,8 @@
         <label asp-for="Title" class="control-label"></label>
         <input asp-for="Title" class="form-control" v-model="titleInputQuery" v-on:input="fetchActivitiesTitles" v-on:blur="closeDropdown" />
         <span asp-validation-for="Title" class="text-danger"></span>
-        <ul v-if="titles.length" class="titlesDropdown">
-            <li v-for="(title, index) in titles" :key="index" v-on:mousedown="selectTitle(title)">
-                {{ title }}
-            </li>
+        <ul v-if="highlightedTitles.length" class="titlesDropdown">
+            <li v-for="(title, index) in highlightedTitles" :key="index" v-on:mousedown="selectTitle(index)" v-html="title" />            
         </ul>
     </div>
 
@@ -50,6 +48,7 @@
             data() {
                 return {
                     titles: [],
+                    highlightedTitles: [],
                     titleInputQuery: ''
                 }
             },
@@ -64,17 +63,29 @@
                         }
 
                         this.titles = await response.json();
+                        if(this.titleInputQuery.length > 0) {
+                            this.highlightedTitles = this.titles.map(title => {
+                                return `<strong>${title.slice(0, this.titleInputQuery.length)}</strong>${title.slice(this.titleInputQuery.length)}`
+                            });
+                        }                        
+                        else {
+                            this.closeDropdown();
+                        }
                     }
-                    catch(error){
+                    catch(error) {
                         console.log("Error: " + error);
                     }
                 },
-                selectTitle(title) {
-                    this.titleInputQuery = title;
-                    this.titles = [];
+                selectTitle(index) {
+                    if(this.titles[index] != null)
+                        this.titleInputQuery = this.titles[index];
+                    else
+                        this.titleInputQuery = "";
+                    this.closeDropdown();
                 },
                 closeDropdown() {
                     this.titles = [];
+                    this.highlightedTitles = [];
                 }
             }
         }).mount("#app");
