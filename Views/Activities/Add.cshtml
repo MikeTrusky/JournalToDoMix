@@ -3,24 +3,27 @@
 <form asp-action="Add" method="post">
     <div class="addingActivity" id="app">
         <div class="addingActivityPartPanel">
-            <div class="form-group col-5 pe-5">
+            <div class="form-group col-7 pe-5">
                 <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" v-model="titleInputQuery" v-on:input="fetchActivitiesTitles" v-on:blur="closeDropdown" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-                <ul v-if="highlightedTitles.length" class="titlesDropdown">
+                <input asp-for="Title" class="form-control" v-model="titleInputQuery" v-on:input="fetchActivitiesTitles" v-on:blur="closeDropdown" />                
+                <span asp-validation-for="Title" class="text-danger"></span>                                
+                <ul v-if="highlightedTitles.length" class="titlesDropdown" v-cloak>
                     <li v-for="(title, index) in highlightedTitles" :key="index" v-on:mousedown="selectTitle(index)" v-html="title" />
                 </ul>
             </div>
 
             <div class="form-group col-2">
-                <label asp-for="Category" class="control-label"></label>
-                <input asp-for="Category" class="form-control" />                
+                <label asp-for="Category" class="control-label"></label>                
+                <select class="form-select" asp-for="Category">
+                    <option selected>None</option>
+                    <option v-for="(category, index) in categories" :key="index" value=index>{{category}}</option>                    
+                </select>
                 <span asp-validation-for="Category" class="text-danger"></span>
             </div>
         </div>
 
         <div class="addingActivityPartPanel">
-            <div class="form-group mb-2 col-7">
+            <div class="form-group mb-2 col-9">
                 <label asp-for="Description" class="control-label"></label>
                 <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
@@ -28,8 +31,8 @@
         </div>
 
         <div class="addingActivityPartPanel">
-            <div class="timePartPanel col-5">
-                <div class="form-group col-4">
+            <div class="timePartPanel col-7">
+                <div class="form-group col-5">
                     <label asp-for="StartedAt" class="control-label"></label>
                     <input asp-for="StartedAt" v-model="startedAtDate" type="datetime-local" class="form-control" />
                     <span asp-validation-for="StartedAt" class="text-danger"></span>
@@ -49,7 +52,7 @@
 
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-5">
+                <div class="col-7">
                     <div class="buttonsPanel mt-4">
                         <button type="submit" class="btn btn-primary">Save</button>
                         <a asp-action="Index" class="btn btn-secondary">Cancel</a>
@@ -68,9 +71,10 @@
             data() {
                 return {
                     titles: [],
+                    categories: [],
                     highlightedTitles: [],
                     titleInputQuery: '',
-                    startedAtDate: ''
+                    startedAtDate: this.getLocalDateString(new Date())
                 }
             },
             methods: {
@@ -94,6 +98,19 @@
                         }
                     }
                     catch(error) {
+                        console.log("Error: " + error);
+                    }
+                },
+                async fetchCategories() {
+                    try{
+                        const response = await fetch(`/Activities/GetCategories`);
+                        if(!response.ok){
+                            throw new Error("Error on categories fetching");
+                        }
+
+                        this.categories = await response.json();
+                    }
+                    catch(error){
                         console.log("Error: " + error);
                     }
                 },
@@ -121,6 +138,9 @@
 
                     return `${year}-${month}-${day}T${hours}:${minutes}`;
                 }
+            },
+            mounted() {
+                this.fetchCategories();
             }
         }).mount("#app");
     </script>

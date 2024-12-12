@@ -18,6 +18,10 @@ html {
 body {
     margin-bottom: 60px;
 }
+
+[v-cloak] {
+    display: none;
+}
 /*#endregion*/
 
 /*#region ActivitiesTable*/
@@ -190,6 +194,8 @@ body {
     border-radius: 30px;    
     padding-top: 3vh;
     padding-bottom: 3vh;
+    margin-left: 20vh;
+    margin-right: 20vh;
 }
 
 .addingActivityPartPanel {

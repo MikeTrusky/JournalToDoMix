@@ -42,7 +42,7 @@ namespace JournalToDoMix.Controllers
 
             ViewBag.Caption = activitiesType;
 
-            return View();
+            return View(ViewBag.Activities);
         }
         #region Add new actions
         public IActionResult Add()
@@ -57,7 +57,8 @@ namespace JournalToDoMix.Controllers
                     DateTime.Now.Minute,
                     0,
                     DateTimeKind.Local
-                )
+                ),
+                DurationPlanned = new TimeSpan(0, 10, 0)
             };
             return View(activityViewModel);
         }
@@ -115,6 +116,15 @@ namespace JournalToDoMix.Controllers
                 .ToListAsync();
 
             return Json(titles);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetCategories()
+        {
+            var categories = await _dbContext.ActivityCategories
+                .Select(c => c.CategoryName)
+                .ToListAsync();
+
+            return Json(categories);
         }
         #endregion
         #region Edit action
