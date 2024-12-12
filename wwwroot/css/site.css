@@ -180,4 +180,38 @@ body {
     background-color: #007bff;
     color: #fff;
 }
+
+.addingActivity {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+    background-color: #413c3cc1;
+    margin-top: 10vh;
+    border-radius: 30px;    
+    padding-top: 3vh;
+    padding-bottom: 3vh;
+}
+
+.addingActivityPartPanel {
+    display: flex;
+    justify-content: center;
+}
+
+.timePartPanel {
+    display: flex;
+    align-items: flex-end;
+    gap: 1vh;
+}
+
+.buttonsPanel {
+    display: flex;
+    justify-content: center;
+    gap: 10vh;    
+}
+
+.buttonsPanel button,
+.buttonsPanel a {
+    flex: 1;
+    
+}
 /*#endregion*/
