@@ -1,81 +1,102 @@
-﻿<div class="timeline-week-container">
-    <div class="container">
-        <div class="timeline-week-wrapper">
-            @if (Enumerable.Count(ViewBag.DaysOfWeek) > 1)
-            {
-                <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="-1" asp-route-daysToShow="7" class="me-3 bi bi-arrow-left-circle timeline-arrow"></a>
-            }
-            else
-            {
-                <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="-1" asp-route-daysToShow="1" class="me-3 bi bi-arrow-left-circle timeline-arrow"></a>
-            }
-            <div class="timeline-week">
-                @foreach (var day in ViewBag.DaysOfWeek)
-                {
-                    <div class="timeline-day">
-                        @if (Enumerable.Count(ViewBag.ActivitiesByDay[day]) > 0)
-                        {
-                            <div class="day-cards">
-                                @for (int i = 0; i < Enumerable.Count(ViewBag.ActivitiesByDay[day]); i++)
-                                {                                    
-                                    <div class="card text-white bg-primary border-4 border-success custom-card" style="max-width: 20rem; z-index: @(i);">
-                                        <div class="card-header">@ViewBag.ActivitiesByDay[day][i].ActivityTitle.Title</div>
-                                        <div class="card-body">
-                                            @* <h4 class="card-title">@activity.Description</h4> *@
-                                            <p>
-                                                @ViewBag.ActivitiesByDay[day][i].StartedAt.ToString("HH:mm") -
-                                                @ViewBag.ActivitiesByDay[day][i].StartedAt.Add(ViewBag.ActivitiesByDay[day][i].DurationPlanned).ToString("HH:mm")
-                                            </p>
-                                        </div>
-                                    </div>
-                                }              
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="card text-white bg-dark" style="max-width: 20rem;">
-                                <div class="card-header">No activity</div>
-                                <div class="card-body">
-                                    <h4 class="card-title"></h4>
-                                </div>
-                            </div>
-                        }
-
+﻿<div class="container-fluid">
+    <div class="row">
+        <div class="col-1 col-md-3 col-xl-2 px-sm-2 px-0 sideMenuMainContainer">
+            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-75">
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="sideMenu">
+                    <li class="nav-item">
+                        <a asp-controller="Activities" asp-action="Add" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-window-plus"></i> <span class="ms-1 d-none d-sm-inline">Add activity</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
+                            <i class="fs-4 bi-calendar2-minus"></i> <span class="ms-1 d-none d-sm-inline">Display mode</span>
+                        </a>
+                        <ul class="collapse flex-column ms-1" id="submenu1" data-bs-parent="#sideMenu">
+                            <li>
+                                <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysToShow="1" class="nav-link d-flex align-items-center gap-2 px-0">
+                                    <i class="fs-5 bi-calendar2-day"></i><span class="d-none d-sm-inline">Day</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysToShow="7" class="nav-link d-flex align-items-center gap-2 px-0">
+                                    <i class="fs-5 bi-calendar2-week"></i><span class="d-none d-sm-inline">Week</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>                    
+                </ul>
+            </div>
+        </div>
+        <div class="col-10 col-md-8 col-xl-9 py-3">
+            <div class="timeline-week-container">
+                <div class="container">
+                    <div class="timeline-week-wrapper">
                         @if (Enumerable.Count(ViewBag.DaysOfWeek) > 1)
                         {
-                            <div class="timeline-day-line"></div>
-                        }   
+                            <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="-1" asp-route-daysToShow="7" class="me-3 bi bi-arrow-left-circle timeline-arrow"></a>
+                        }
                         else
                         {
-                            <div class="timeline-day-one-line"></div>
+                            <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="-1" asp-route-daysToShow="1" class="me-3 bi bi-arrow-left-circle timeline-arrow"></a>
                         }
+                        <div class="timeline-week">
+                            @foreach (var day in ViewBag.DaysOfWeek)
+                            {
+                                <div class="timeline-day">
+                                    @if (Enumerable.Count(ViewBag.ActivitiesByDay[day]) > 0)
+                                    {
+                                        <div class="day-cards">
+                                            @for (int i = 0; i < Enumerable.Count(ViewBag.ActivitiesByDay[day]); i++)
+                                            {
+                                                <div class="card text-white bg-primary border-4 border-success custom-card" style="max-width: 20rem; z-index: @(i);">
+                                                    <div class="card-header">@ViewBag.ActivitiesByDay[day][i].ActivityTitle.Title</div>
+                                                    <div class="card-body">
+                                                        @* <h4 class="card-title">@activity.Description</h4> *@
+                                                        <p>
+                                                            @ViewBag.ActivitiesByDay[day][i].StartedAt.ToString("HH:mm") -
+                                                            @ViewBag.ActivitiesByDay[day][i].StartedAt.Add(ViewBag.ActivitiesByDay[day][i].DurationPlanned).ToString("HH:mm")
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="card text-white bg-dark" style="max-width: 20rem;">
+                                            <div class="card-header">No activity</div>
+                                            <div class="card-body">
+                                                <h4 class="card-title"></h4>
+                                            </div>
+                                        </div>
+                                    }
 
-                        <h6>@day.ToString("dddd")</h6>
-                        <h6>@day.ToString("dd.MM")</h6>
+                                    @if (Enumerable.Count(ViewBag.DaysOfWeek) > 1)
+                                    {
+                                        <div class="timeline-day-line"></div>
+                                    }
+                                    else
+                                    {
+                                        <div class="timeline-day-one-line"></div>
+                                    }
+
+                                    <h6>@day.ToString("dddd")</h6>
+                                    <h6>@day.ToString("dd.MM")</h6>
+                                </div>
+                            }
+                        </div>
+                        @if (Enumerable.Count(ViewBag.DaysOfWeek) > 1)
+                        {
+                            <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="1" asp-route-daysToShow="7" class="ms-3 bi bi-arrow-right-circle timeline-arrow"></a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="1" asp-route-daysToShow="1" class="ms-3 bi bi-arrow-right-circle timeline-arrow"></a>
+                        }
                     </div>
-                }
+                </div>                
             </div>
-            @if (Enumerable.Count(ViewBag.DaysOfWeek) > 1)
-            {
-                <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="1" asp-route-daysToShow="7" class="ms-3 bi bi-arrow-right-circle timeline-arrow"></a>
-            }
-            else
-            {
-                <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="1" asp-route-daysToShow="1" class="ms-3 bi bi-arrow-right-circle timeline-arrow"></a>
-            }            
         </div>
-    </div>
-    <div class="container">
-        <div class="timeline-dropdown-container">
-            <div class="btn-group">
-                <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    Change display
-                </button>
-                <ul class="dropdown-menu w-100" style="text-align: center;">
-                    <li><a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysToShow="7" class="dropdown-item">Week</a></li>
-                    <li><a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysToShow="1" class="dropdown-item">Day</a></li>
-                </ul>           
-            </div>            
-        </div>        
     </div>
 </div>

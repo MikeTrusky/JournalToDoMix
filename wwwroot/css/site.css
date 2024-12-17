@@ -24,6 +24,13 @@ body {
 }
 /*#endregion*/
 
+/*#region SideMenu*/
+.sideMenuMainContainer {
+    border-bottom-right-radius: 10px;
+    background-color: #413c3cc1;
+} 
+/*#endregion*/
+
 /*#region ActivitiesTable*/
 .activities-table-caption {
     font-size: 1.5rem;
@@ -56,8 +63,15 @@ body {
 .timeline-week-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: center;    
+    padding-top: 10vh;
     height: 80vh;
+}
+
+.timeline-week-wrapper {
+    display: flex;
+    align-items: end;
+    height: 200px;
 }
 
 .timeline-week {
@@ -95,12 +109,6 @@ body {
     width: 100%;
 }
 
-.timeline-week-wrapper {
-    display: flex;
-    align-items: end;
-    height: 200px;
-}
-
 .timeline-arrow {
     font-size: 2rem;
     cursor: pointer;
@@ -117,6 +125,10 @@ body {
     flex-direction: row;
     justify-content: center;
     padding-top: 40px;
+}
+
+#sideMenu ul {
+    list-style-type: none;
 }
 /*#endregion*/
 
