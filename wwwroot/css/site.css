@@ -28,6 +28,7 @@ body {
 .sideMenuMainContainer {
     border-bottom-right-radius: 10px;
     background-color: #413c3cc1;
+    height: 80vh;
 } 
 /*#endregion*/
 
