@@ -7,20 +7,21 @@
 }
 
 <div class="container-fluid">
-    <div class="row">
+    <div class="row" id="app">
         <div class="col-1 col-md-3 col-xl-2 px-sm-2 px-0 sideMenuMainContainer">
-            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-75">
+            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-75">                                
                 <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="sideMenu">
                     <li class="nav-item">
                         <a asp-controller="Activities" asp-action="Add" class="nav-link align-middle px-0">
                             <i class="fs-4 bi-window-plus"></i> <span class="ms-1 d-none d-sm-inline">Add activity</span>
                         </a>
-                    </li>
+                    </li>                    
                     <li>
-                        <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-file-spreadsheet"></i> <span class="ms-1 d-none d-sm-inline">Table mode</span>
-                        </a>
-                        <ul class="collapse flex-column ms-1" id="submenu1" data-bs-parent="#sideMenu">
+                        <a href="#tableModeSideMenu" data-bs-toggle="collapse" class="nav-link px-0" v-on:click="collapseClick">
+                            <i class="fs-4 bi-file-spreadsheet"></i><span class="ms-1 d-none d-sm-inline">Table mode</span><i v-if="collapseClicked" class="fs-5 m-4 bi-arrow-down-circle"></i>
+                            <i v-if="!collapseClicked" class="fs-5 m-4 bi-arrow-up-circle" v-cloak></i>
+                        </a>                        
+                        <ul class="collapse flex-column ms-1" id="tableModeSideMenu" data-bs-parent="#sideMenu">
                             <li>
                                 <a asp-controller="Activities" asp-action="Index" asp-route-activitiesType="Planned Activities" class="nav-link d-flex align-items-center gap-2 px-0">
                                     <i class="fs-5 bi-calendar-plus"></i><span class="d-none d-sm-inline">Planned</span>
@@ -43,7 +44,7 @@
         </div>
         <div class="col-10 col-md-8 col-xl-9 py-3">
             <div class="container">
-                <div class="table-responsive" id="app">
+                <div class="table-responsive">
                     <table class="table table-bordered caption-top activities-table-fixed">
                         <caption class="text-center mb-2 activities-table-caption"><strong>@caption</strong></caption>
 
@@ -111,7 +112,8 @@
                         id = activity.Id,
                         startedAt = activity.StartedAt.ToString("yyyy-MM-ddTHH:mm:ss"),
                         totalDuration = activity.DurationPlanned.TotalSeconds
-                    })))
+                    }))),
+                    collapseClicked: true,
                 }
             },
             methods: {
@@ -135,7 +137,10 @@
                     const secs = seconds % 60;
 
                     return  `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                }
+                },
+                collapseClick() {                  
+                    this.collapseClicked = !this.collapseClicked;
+                },
             },
             mounted() {                
                 this.calculateTimes();
