@@ -17,32 +17,36 @@ namespace JournalToDoMix.Controllers
             _logger = logger;
             _dbContext = dbContext;
             _activitiesServices = activitiesServices;
-        }
-        public IActionResult Index(string activitiesType = "Current Activities")
+        }        
+        public IActionResult Index(ActivityIndexViewModel activityIndexViewModel)
         {
+            if (!ModelState.IsValid)
+                return RedirectToAction("Index");
+
+            activityIndexViewModel ??= new ActivityIndexViewModel();
+
             var now = DateTime.Now;
 
             _activitiesServices.UpdateActivitiesCompletedStatus(now);
 
-            switch (activitiesType)
+            try
             {
-                case "Planned Activities":
-                    ViewBag.Current = false;
-                    ViewBag.Activities = _activitiesServices.GetPlannedActivities(now);
-                    break;
-                case "Current Activities":
-                    ViewBag.Current = true;
-                    ViewBag.Activities = _activitiesServices.GetCurrentActivities(now);
-                    break;
-                case "Previous Activities":
-                    ViewBag.Current = false;
-                    ViewBag.Activities = _activitiesServices.GetPreviousActivities(now);
-                    break;
+                activityIndexViewModel.Activities = activityIndexViewModel.ActivityType switch
+                {
+                    "Planned" => _activitiesServices.GetPlannedActivities(now),
+                    "Current" => _activitiesServices.GetCurrentActivities(now),
+                    "Previous" => _activitiesServices.GetPreviousActivities(now),
+                    _ => throw new InvalidOperationException()
+                };
             }
+            catch(InvalidOperationException ex)
+            {
+                return RedirectToAction("Index");
+            }            
 
-            ViewBag.Caption = activitiesType;
+            activityIndexViewModel.IsCurrent = (activityIndexViewModel.ActivityType == "Current");
 
-            return View(ViewBag.Activities);
+            return View(activityIndexViewModel);
         }
         #region Add new actions
         public IActionResult Add()

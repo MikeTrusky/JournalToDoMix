@@ -1,9 +1,7 @@
-﻿@model List<Activity>
+﻿@model ActivityIndexViewModel
 
 @{
     ViewData["Title"] = "Activities";
-    var caption = ViewBag.Caption ?? "Activities";
-    var current = ViewBag.Current ?? false;
 }
 
 <div class="container-fluid">
@@ -23,17 +21,17 @@
                         </a>                        
                         <ul class="collapse flex-column ms-1" id="tableModeSideMenu" data-bs-parent="#sideMenu">
                             <li>
-                                <a asp-controller="Activities" asp-action="Index" asp-route-activitiesType="Planned Activities" class="nav-link d-flex align-items-center gap-2 px-0">
+                                <a asp-controller="Activities" asp-action="Index" asp-route-activityType="Planned" class="nav-link d-flex align-items-center gap-2 px-0">
                                     <i class="fs-5 bi-calendar-plus"></i><span class="d-none d-sm-inline">Planned</span>
                                 </a>
                             </li>
                             <li>
-                                <a asp-controller="Activities" asp-action="Index" asp-route-activitiesType="Current Activities" class="nav-link d-flex align-items-center gap-2 px-0">
+                                <a asp-controller="Activities" asp-action="Index" asp-route-activityType="Current" class="nav-link d-flex align-items-center gap-2 px-0">
                                     <i class="fs-5 bi-calendar-week"></i><span class="d-none d-sm-inline">Current</span>
                                 </a>
                             </li>
                             <li>
-                                <a asp-controller="Activities" asp-action="Index" asp-route-activitiesType="Previous Activities" class="nav-link d-flex align-items-center gap-2 px-0">
+                                <a asp-controller="Activities" asp-action="Index" asp-route-activityType="Previous" class="nav-link d-flex align-items-center gap-2 px-0">
                                     <i class="fs-5 bi-calendar-check"></i><span class="d-none d-sm-inline">Previous</span>
                                 </a>
                             </li>
@@ -46,16 +44,16 @@
             <div class="container">
                 <div class="table-responsive">
                     <table class="table table-bordered caption-top activities-table-fixed">
-                        <caption class="text-center mb-2 activities-table-caption"><strong>@caption</strong></caption>
+                        <caption class="text-center mb-2 activities-table-caption"><strong>@Model.ActivityType</strong></caption>
 
                         <tr class="table-primary">
-                            <th>@Html.DisplayNameFor(model => model.First().ActivityTitle.Title)</th>
-                            <th>@Html.DisplayNameFor(model => model.First().Description)</th>
-                            <th>@Html.DisplayNameFor(model => model.First().StartedAt)</th>
-                            <th>@Html.DisplayNameFor(model => model.First().DurationPlanned)</th>
+                            <th>@Html.DisplayNameFor(model => model.Activities.First().ActivityTitle.Title)</th>
+                            <th>@Html.DisplayNameFor(model => model.Activities.First().Description)</th>
+                            <th>@Html.DisplayNameFor(model => model.Activities.First().StartedAt)</th>
+                            <th>@Html.DisplayNameFor(model => model.Activities.First().DurationPlanned)</th>
                             <th />
                         </tr>
-                        @foreach (var action in Model)
+                        @foreach (var action in Model.Activities)
                         {
                             <tr>
                                 <td>@action.ActivityTitle.Title</td>
@@ -68,7 +66,7 @@
                                     <td>@action.ActivityTitle.Description</td>
                                 }
                                 <td>@action.StartedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                                @if (current)
+                                @if (Model.IsCurrent)
                                 {
                                     <td>
                                         <span v-if="remainingTimes[@action.Id] !== undefined && remainingTimes[@action.Id] > 0">
@@ -107,7 +105,7 @@
                 return {
                     elapsedTimes: {},
                     remainingTimes: {},
-                    activities: @Html.Raw(Json.Serialize(Model.Select(activity => new
+                    activities: @Html.Raw(Json.Serialize(Model.Activities.Select(activity => new
                     {
                         id = activity.Id,
                         startedAt = activity.StartedAt.ToString("yyyy-MM-ddTHH:mm:ss"),
