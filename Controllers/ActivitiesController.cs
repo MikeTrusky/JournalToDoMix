@@ -33,16 +33,26 @@ namespace JournalToDoMix.Controllers
             {
                 activityIndexViewModel.Activities = activityIndexViewModel.ActivityType switch
                 {
-                    "Planned" => _activitiesServices.GetPlannedActivities(now),
-                    "Current" => _activitiesServices.GetCurrentActivities(now),
-                    "Previous" => _activitiesServices.GetPreviousActivities(now),
+                    "Planned" => _activitiesServices.GetPlannedActivities(now, activityIndexViewModel.PageSize, activityIndexViewModel.PageNumber),
+                    "Current" => _activitiesServices.GetCurrentActivities(now, activityIndexViewModel.PageSize, activityIndexViewModel.PageNumber),
+                    "Previous" => _activitiesServices.GetPreviousActivities(now, activityIndexViewModel.PageSize, activityIndexViewModel.PageNumber),
+                    _ => throw new InvalidOperationException()
+                };
+                activityIndexViewModel.AllPagesNumber = activityIndexViewModel.ActivityType switch
+                {
+                    "Planned" => (int)Math.Ceiling((float)_activitiesServices.GetPlannedActivitiesCount(now) / activityIndexViewModel.PageSize),
+                    "Current" => (int)Math.Ceiling((float)_activitiesServices.GetCurrentActivitiesCount(now) / activityIndexViewModel.PageSize),
+                    "Previous" => (int)Math.Ceiling((float)_activitiesServices.GetPreviousActivitiesCount(now) / activityIndexViewModel.PageSize),
                     _ => throw new InvalidOperationException()
                 };
             }
-            catch(InvalidOperationException ex)
+            catch(InvalidOperationException)
             {
                 return RedirectToAction("Index");
-            }            
+            }
+
+            if (activityIndexViewModel.AllPagesNumber == 0)
+                activityIndexViewModel.AllPagesNumber = 1;
 
             activityIndexViewModel.IsCurrent = (activityIndexViewModel.ActivityType == "Current");
 

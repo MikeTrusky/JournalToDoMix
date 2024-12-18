@@ -9,5 +9,6 @@ namespace JournalToDoMix.ViewModels
         public ICollection<Activity> Activities { get; set; } = new List<Activity>();
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;
+        public int AllPagesNumber { get; set; } = 1;
     }
 }

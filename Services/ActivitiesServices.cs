@@ -1,5 +1,6 @@
 ﻿using JournalToDoMix.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace JournalToDoMix.Services
 {
@@ -12,37 +13,69 @@ namespace JournalToDoMix.Services
             _dbContext = dbContext;
         }
 
-        public List<Activity> GetCurrentActivities(DateTime now)
+        private IQueryable<Activity> GetFilteredActivities(Expression<Func<Activity, bool>> filter)
         {
-            return  _dbContext.Activities
+            return _dbContext.Activities
                     .Include(t => t.ActivityTitle)
                     .Include(c => c.ActivityCategory)
-                    .Where(a => a.StartedAt <= now && !a.IsCompleted)
-                    .AsNoTracking()
+                    .Where(filter)
+                    .AsNoTracking();
+        }
+
+        #region CurrentActivities
+        public List<Activity> GetCurrentActivities(DateTime now, int pageSize, int pageNumber)
+        {
+            var skipNumber = (pageNumber - 1) * pageSize;
+            return GetFilteredActivities(a => a.StartedAt <= now && !a.IsCompleted)
                     .AsEnumerable()
                     .Where(a => a.StartedAt.Add(a.DurationPlanned) >= now)
+                    .Skip(skipNumber)
+                    .Take(pageSize)
                     .ToList();
         }
 
-        public List<Activity> GetPlannedActivities(DateTime now)
+        public int GetCurrentActivitiesCount(DateTime now)
         {
-            return  _dbContext.Activities
-                    .Include(t => t.ActivityTitle)
-                    .Include(c => c.ActivityCategory)
-                    .Where(a => a.StartedAt > now)
-                    .AsNoTracking()
-                    .ToList();
+            return GetFilteredActivities(a => a.StartedAt <= now && !a.IsCompleted)
+                    .AsEnumerable()
+                    .Where(a => a.StartedAt.Add(a.DurationPlanned) >= now)
+                    .Count();
+        }
+        #endregion
+
+        #region PlannedActivities
+        public List<Activity> GetPlannedActivities(DateTime now, int pageSize, int pageNumber)
+        {
+            var skipNumber = (pageNumber - 1) * pageSize;
+            return GetFilteredActivities(a => a.StartedAt > now)
+                    .Skip(skipNumber)
+                    .Take(pageSize)
+                    .ToList();            
         }
 
-        public List<Activity> GetPreviousActivities(DateTime now)
+        public int GetPlannedActivitiesCount(DateTime now)
         {
-            return  _dbContext.Activities
-                    .Include(t => t.ActivityTitle)
-                    .Include(c => c.ActivityCategory)
-                    .Where(a => a.IsCompleted)
-                    .AsNoTracking()
-                    .ToList();
+            return GetFilteredActivities(a => a.StartedAt > now)
+                    .Count();
         }
+        #endregion
+
+        #region PreviousActivities
+        public List<Activity> GetPreviousActivities(DateTime now, int pageSize, int pageNumber)
+        {
+            var skipNumber = (pageNumber - 1) * pageSize;
+            return GetFilteredActivities(a => a.IsCompleted)
+                    .Skip(skipNumber)
+                    .Take(pageSize)
+                    .ToList();            
+        }
+
+        public int GetPreviousActivitiesCount(DateTime now)
+        {
+            return GetFilteredActivities(a => a.IsCompleted)
+                    .Count();
+        }
+        #endregion
 
         public void UpdateActivitiesCompletedStatus(DateTime now)
         {
