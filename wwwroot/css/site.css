@@ -33,7 +33,11 @@ body {
     border-bottom-right-radius: 10px;
     background-color: #413c3cc1;
     height: 80vh;
-} 
+}
+
+#sideMenu ul {
+    list-style-type: none;
+}
 /*#endregion*/
 
 /*#region ActivitiesTable*/
@@ -147,8 +151,10 @@ body {
     padding-top: 40px;
 }
 
-#sideMenu ul {
-    list-style-type: none;
+.text-fit {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 /*#endregion*/
 
@@ -160,7 +166,7 @@ body {
 
 .custom-card {
     position: relative;
-    margin-bottom: -70px;
+    margin-bottom: -100px;
 }
 
 .custom-card:last-child {
