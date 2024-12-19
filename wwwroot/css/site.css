@@ -22,6 +22,10 @@ body {
 [v-cloak] {
     display: none;
 }
+
+.mainNavbar {
+    background-color: #272727c1;
+}
 /*#endregion*/
 
 /*#region SideMenu*/
@@ -37,6 +41,9 @@ body {
     display: flex;
     flex-direction: column;
     height: 80vh;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    background-color: #413c3cc1;
 }
 
 .activities-table-container nav {
@@ -46,8 +53,7 @@ body {
 
 .activities-table-caption {
     font-size: 1.5rem;
-    color: dodgerblue;
-    margin-bottom: 10px;
+    color: white;
 }
 
 .activities-table-fixed {
@@ -57,7 +63,7 @@ body {
 
 .activities-table-fixed th, .activities-table-fixed td {
     overflow: hidden;
-    white-space: nowrap;
+    white-space: nowrap;    
 }
 
 .activities-table-fixed th:nth-child(2) {
@@ -69,9 +75,12 @@ body {
 .timeline-week-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;    
+    justify-content: center;
     padding-top: 10vh;
     height: 80vh;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    background-color: #413c3cc1;
 }
 
 .timeline-week-wrapper {
