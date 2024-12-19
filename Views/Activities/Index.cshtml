@@ -50,6 +50,7 @@
                             <tr class="table-primary">
                                 <th>@Html.DisplayNameFor(model => model.Activities.First().ActivityTitle.Title)</th>
                                 <th>@Html.DisplayNameFor(model => model.Activities.First().Description)</th>
+                                <th>@Html.DisplayNameFor(model => model.Activities.First().ActivityCategory.CategoryName)</th>
                                 <th>@Html.DisplayNameFor(model => model.Activities.First().StartedAt)</th>
                                 <th>@Html.DisplayNameFor(model => model.Activities.First().DurationPlanned)</th>
                                 <th />
@@ -66,10 +67,11 @@
                                     {
                                         <td>@action.ActivityTitle.Description</td>
                                     }
-                                    <td>@action.StartedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@action.ActivityCategory.CategoryName</td>
+                                    <td id="activityStartedAtOnIndex">@action.StartedAt.ToString("yyyy-MM-dd HH:mm")</td>
                                     @if (Model.IsCurrent)
                                     {
-                                        <td>
+                                        <td id="activityDurationOnIndex">
                                             <span v-if="remainingTimes[@action.Id] !== undefined && remainingTimes[@action.Id] > 0">
                                                 {{ formatTime(elapsedTimes[@action.Id]) }} ( {{ formatTime(remainingTimes[@action.Id]) }} )
                                             </span>
@@ -80,7 +82,7 @@
                                     }
                                     else
                                     {
-                                        <td>@action.DurationPlanned.ToString(@"hh\:mm")</td>
+                                        <td id="activityDurationOnIndex">@action.DurationPlanned.ToString(@"hh\:mm")</td>
                                     }
                                     <td>
                                         <div class="justify-content-center d-flex">

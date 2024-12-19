@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace JournalToDoMix.Models
 {
@@ -7,6 +8,7 @@ namespace JournalToDoMix.Models
         public int Id { get; set; }
         [Required]
         [StringLength(30)]
+        [DisplayName("Category")]
         public string CategoryName { get; set; } = string.Empty;
 
 

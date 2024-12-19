@@ -206,7 +206,8 @@ namespace JournalToDoMix.Controllers
 
             if (activityViewModel.Description != null && activityViewModel.Description != title.Description)
                 activity.Description = activityViewModel.Description;
-            
+
+            _dbContext.Activities.Update(activity);
             _dbContext.SaveChanges();
 
             return RedirectToAction("Index");

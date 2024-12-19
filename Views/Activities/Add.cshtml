@@ -15,8 +15,7 @@
             <div class="form-group col-2">
                 <label asp-for="Category" class="control-label"></label>                
                 <select class="form-select" asp-for="Category">
-                    <option selected>None</option>
-                    <option v-for="(category, index) in categories" :key="index" value=index>{{category}}</option>                    
+                    <option v-for="(category, index) in categories" :key="index" :value="category" :selected="category == 'None'">{{category}}</option>
                 </select>
                 <span asp-validation-for="Category" class="text-danger"></span>
             </div>

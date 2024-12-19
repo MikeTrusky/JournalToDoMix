@@ -57,13 +57,18 @@ body {
 }
 
 .activities-table-fixed {
-    table-layout: fixed;
+    table-layout: fixed;    
     width: 100%;
 }
 
 .activities-table-fixed th, .activities-table-fixed td {
     overflow: hidden;
-    white-space: nowrap;    
+    white-space: nowrap;   
+    vertical-align: middle;
+}
+
+.activities-table-fixed #activityDurationOnIndex, #activityStartedAtOnIndex {
+    text-align: center;
 }
 
 .activities-table-fixed th:nth-child(2) {
