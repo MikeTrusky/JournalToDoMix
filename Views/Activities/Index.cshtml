@@ -151,11 +151,11 @@
                     elapsedTimes: {},
                     remainingTimes: {},
                     activities: @Html.Raw(Json.Serialize(Model.Activities.Select(activity => new
-            {
-                id = activity.Id,
-                startedAt = activity.StartedAt.ToString("yyyy-MM-ddTHH:mm:ss"),
-                totalDuration = activity.DurationPlanned.TotalSeconds
-            }))),
+                    {
+                        id = activity.Id,
+                        startedAt = activity.StartedAt.ToString("yyyy-MM-ddTHH:mm:ss"),
+                        totalDuration = activity.DurationPlanned.TotalSeconds
+                    }))),
                     collapseClicked: true,
                 }
             },

@@ -162,6 +162,7 @@ body {
 .day-cards {
     position: relative;
     overflow: visible;
+    cursor: pointer;
 }
 
 .custom-card {
@@ -182,20 +183,39 @@ body {
     margin-bottom: -20px;
     transform: scale(1.1);
 }
+
+.dayCardModal {    
+    margin-top: 16vh;    
+}
+
+.dayCardModalInfo {
+    font-size: 18px;
+    margin-left: 1vh;
+    margin-bottom: 3vh;
+    background-color: #3d3a3ac1;
+    border-radius: 10px;    
+}
+
+.dayCardModalInfoLabel {  
+    font-size: 19px;
+    font-weight: bold;
+    background-color: #3d3a3ac1;
+    border-radius: 10px;    
+}
 /*#endregion*/
 
 /*#region AddingActivity*/
 .titlesDropdown {
     position: absolute;
     list-style: none;
-    margin: 0;    
+    margin: 0;
     padding: 0;
     max-height: 150px;
     overflow-y: auto;
-    border: 2px solid #ccc;    
+    border: 2px solid #ccc;
     background-color: #fff;
     color: #827c7c;
-    z-index: 1000;    
+    z-index: 1000;
 }
 
 .titlesDropdown li {

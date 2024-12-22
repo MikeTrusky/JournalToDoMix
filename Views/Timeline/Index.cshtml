@@ -25,7 +25,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>                    
+                    </li>
                 </ul>
             </div>
         </div>
@@ -50,7 +50,12 @@
                                         <div class="day-cards">
                                             @for (int i = 0; i < Enumerable.Count(ViewBag.ActivitiesByDay[day]); i++)
                                             {
-                                                <div class="card text-white bg-primary border-4 border-success custom-card" style="max-width: 9rem; z-index: @(i);">
+                                                <div class="card text-white bg-primary border-4 border-success custom-card" style="max-width: 9rem; z-index: @(i);" v-on:click="openModal(`@ViewBag.ActivitiesByDay[day][i].ActivityTitle.Title`,
+                                                                                                                                                                                          `@ViewBag.ActivitiesByDay[day][i].ActivityTitle.Description`,
+                                                                                                                                                                                          `@ViewBag.ActivitiesByDay[day][i].ActivityCategory.CategoryName`,
+                                                                                                                                                                                          `@ViewBag.ActivitiesByDay[day][i].Description`,
+                                                                                                                                                                                          `@ViewBag.ActivitiesByDay[day][i].StartedAt`,
+                                                                                                                                                                                          `@ViewBag.ActivitiesByDay[day][i].DurationPlanned`)">
                                                     <div class="card-header text-fit">@ViewBag.ActivitiesByDay[day][i].ActivityTitle.Title</div>
                                                     <div class="card-body">
                                                         <p class="card-title">@ViewBag.ActivitiesByDay[day][i].ActivityCategory.CategoryName</p>
@@ -61,6 +66,57 @@
                                                     </div>
                                                 </div>
                                             }
+                                        </div>
+                                        <div class="modal fade dayCardModal" id="cardModal" tabindex="-1" ref="cardModal">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header text-center">
+                                                        <h1 class="modal-title fs-5 w-100" id="exampleModalLabel" ref="cardModalTitle">Activity title</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="container">
+                                                            <div class="column">
+                                                                <div class="row justify-content-center">
+                                                                    <div class="col-5">
+                                                                        <p class="dayCardModalInfoLabel">Category</p>
+                                                                    </div>
+                                                                    <div class="col-5 text-start dayCardModalInfo" ref="cardModalCategory">
+                                                                        <p>category</p>
+                                                                    </div>
+                                                                </div>
+                                                                 <div class="row justify-content-center">
+                                                                    <div class="col-5">
+                                                                        <p class="dayCardModalInfoLabel">Description</p>
+                                                                    </div>
+                                                                    <div class="col-5 text-start dayCardModalInfo" ref="cardModalDescription">
+                                                                        <p>description</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row justify-content-center">
+                                                                    <div class="col-5">
+                                                                        <p class="dayCardModalInfoLabel">Started at</p>
+                                                                    </div>
+                                                                    <div class="col-5 text-start dayCardModalInfo" ref="cardModalStartedAt">
+                                                                        <p>10-10-10</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row justify-content-center">
+                                                                    <div class="col-5">
+                                                                        <p class="dayCardModalInfoLabel">Duration</p>
+                                                                    </div>
+                                                                    <div class="col-5 text-start dayCardModalInfo" ref="cardModalDuration">
+                                                                        <p>00:10</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     }
                                     else
@@ -96,7 +152,7 @@
                             <a asp-controller="Timeline" asp-action="Index" asp-route-startOfWeek="@ViewBag.DaysOfWeek[0].ToString("yyyy-MM-dd")" asp-route-daysOfWeekToAdd="1" asp-route-daysToShow="1" class="ms-3 bi bi-arrow-right-circle timeline-arrow"></a>
                         }
                     </div>
-                </div>                
+                </div>
             </div>
         </div>
     </div>
@@ -109,12 +165,28 @@
         createApp({
             data() {
                 return {
-                    collapseClicked: true            
+                    collapseClicked: true
                 }
             },
-            methods: {                
+            methods: {
                 collapseClick() {
                     this.collapseClicked = !this.collapseClicked;
+                },
+                openModal(title, titleDescription, category, description, startedAt, duration) {
+                    const modalInstance = new bootstrap.Modal(this.$refs.cardModal);
+                    this.$refs.cardModalTitle.innerHTML = title;
+                    this.$refs.cardModalCategory.innerHTML = category;
+                    if(description.length === 0)
+                    {
+                        this.$refs.cardModalDescription.innerHTML = titleDescription;
+                    }
+                    else
+                    {
+                        this.$refs.cardModalDescription.innerHTML = description;
+                    }                    
+                    this.$refs.cardModalStartedAt.innerHTML = startedAt;
+                    this.$refs.cardModalDuration.innerHTML = duration;
+                    modalInstance.show();
                 }
             }
         }).mount("#app");
