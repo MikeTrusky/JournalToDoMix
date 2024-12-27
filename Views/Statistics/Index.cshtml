@@ -1,0 +1,104 @@
+﻿@{
+    ViewData["Title"] = "Statistics";
+}
+
+<div class="container-fluid">
+    <div class="row" id="app">
+        <div class="col-1 col-md-3 col-xl-2 px-sm-2 px-0 sideMenuMainContainer">
+            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-75">
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="sideMenu">
+                    <li class="nav-item">
+                        <a asp-controller="Activities" asp-action="Add" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-window-plus"></i> <span class="ms-1 d-none d-sm-inline">Add activity</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tableModeSideMenu" data-bs-toggle="collapse" class="nav-link px-0" v-on:click="collapseClick">
+                            <i class="fs-4 bi-pie-chart"></i><span class="ms-1 d-none d-sm-inline">Chart version</span><i v-if="collapseClicked" class="fs-5 m-4 bi-arrow-down-circle"></i>
+                            <i v-if="!collapseClicked" class="fs-5 m-4 bi-arrow-up-circle" v-cloak></i>
+                        </a>
+                        <ul class="collapse flex-column ms-1" id="tableModeSideMenu" data-bs-parent="#sideMenu">
+                            <li>
+                                <a asp-controller="Statistics" asp-action="Index" class="nav-link d-flex align-items-center gap-2 px-0">
+                                    <i class="fs-5 bi-calendar-plus"></i><span class="d-none d-sm-inline">First</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a asp-controller="Statistics" asp-action="Index" class="nav-link d-flex align-items-center gap-2 px-0">
+                                    <i class="fs-5 bi-calendar-week"></i><span class="d-none d-sm-inline">Second</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a asp-controller="Statistics" asp-action="Index" class="nav-link d-flex align-items-center gap-2 px-0">
+                                    <i class="fs-5 bi-calendar-check"></i><span class="d-none d-sm-inline">Third</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-10 col-md-8 col-xl-9">
+            <div class="statistics-container">
+                <div class="container">
+                    <div id="chart" ref="chart">
+                    </div>
+                </div>
+            </div>            
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    collapseClicked: true
+                }
+            },
+            methods: {
+                drawChart(){
+                    google.charts.load('current', {'packages':['corechart']});
+                    google.charts.setOnLoadCallback(() => {
+                        const chartData = [
+                            ["Topping", "Slices"],
+                            ["Mushrooms", 3],
+                            ["Onions", 1],
+                            ["Olives", 1],
+                            ["Zucchini", 1],
+                            ["Pepperoni", 2]
+                        ];
+                        const chartOptions = {                            
+                            legend: { 
+                                position: "bottom",
+                                textStyle: {
+                                  color: "#ffffff",                                  
+                                  bold: true,
+                                },
+                            },
+                            width: 1000,
+                            height: 600,
+                            backgroundColor: {
+                                fill: "transparent",
+                            },
+                        };                        
+                        const data = new google.visualization.arrayToDataTable(chartData);
+                        const options = chartOptions;
+
+                        const chart = new google.visualization.PieChart(this.$refs.chart);
+                        chart.draw(data, options);
+                    });
+                },
+                collapseClick() {
+                    this.collapseClicked = !this.collapseClicked;
+                },
+            },
+            mounted() {
+                this.drawChart();
+            }
+        }).mount("#app");
+    </script>
+}
