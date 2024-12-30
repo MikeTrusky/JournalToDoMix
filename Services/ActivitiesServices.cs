@@ -1,4 +1,5 @@
 ﻿using JournalToDoMix.Models;
+using JournalToDoMix.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -77,6 +78,33 @@ namespace JournalToDoMix.Services
         }
         #endregion
 
+        #region Stats
+        public List<StatisticsViewModel> GetEachActivityCount()
+        {
+            return _dbContext.Activities
+                    .GroupBy(a => a.ActivityTitle)
+                    .Select(g => new StatisticsViewModel
+                    {
+                        Label = g.Key.Title,
+                        Count = g.Count()
+                    })
+                    .ToList();
+        }
+
+        public List<StatisticsViewModel> GetEachActivityTime()
+        {
+            return _dbContext.Activities
+                    .GroupBy(a => a.ActivityTitle)
+                    .AsEnumerable()
+                    .Select(g => new StatisticsViewModel
+                    {
+                        Label = g.Key.Title,
+                        Count = CalculateHours(g.Sum(a => a.DurationPlanned.Ticks))
+                    })
+                    .ToList();
+        }
+        #endregion
+
         public void UpdateActivitiesCompletedStatus(DateTime now)
         {
             var incompletedActivities = _dbContext.Activities
@@ -98,6 +126,21 @@ namespace JournalToDoMix.Services
 
             if (hasChange)
                 _dbContext.SaveChanges();
+        }
+
+        private double CalculateHours(long time)
+        {
+            var totalHours = TimeSpan.FromTicks(time).TotalHours;
+            var hoursPart = Math.Floor(totalHours);
+            var minutesPart = totalHours - hoursPart;
+            if (minutesPart > 0)
+            {
+                minutesPart *= 100;
+                minutesPart = Math.Floor(minutesPart);
+                minutesPart /= 100;
+            }
+
+            return hoursPart + minutesPart;
         }
     }
 }

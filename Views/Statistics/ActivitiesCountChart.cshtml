@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Statistics";
+    ViewData["Description"] = "- Activities count";
 }
 
 <div class="container-fluid">
@@ -35,7 +36,7 @@
                 </ul>
             </div>
         </div>
-        <div class="col-10 col-md-8 col-xl-9">
+        <div class="col-10 col-md-8 col-xl-9">            
             <div class="statistics-container">
                 <div class="container">
                     <div id="chart" ref="chart">
@@ -67,7 +68,7 @@
                                 @: ['@item.Label', @item.Count.ToString(System.Globalization.CultureInfo.InvariantCulture)],
                             }
                         ];
-                        const chartOptions = {                                       
+                        const chartOptions = {   
                             legend: { 
                                 position: "bottom",
                                 alignment: "center",
