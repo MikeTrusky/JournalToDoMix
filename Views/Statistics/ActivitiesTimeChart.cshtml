@@ -1,0 +1,126 @@
+﻿@model List<StatisticsViewModel>
+
+@{
+    ViewData["Title"] = "Statistics";
+}
+
+<div class="container-fluid">
+    <div class="row" id="app">
+        <div class="col-1 col-md-3 col-xl-2 px-sm-2 px-0 sideMenuMainContainer">
+            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-75">
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="sideMenu">
+                    <li class="nav-item">
+                        <a asp-controller="Activities" asp-action="Add" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-window-plus"></i> <span class="ms-1 d-none d-sm-inline">Add activity</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tableModeSideMenu" data-bs-toggle="collapse" class="nav-link px-0" v-on:click="collapseClick">
+                            <i class="fs-4 bi-pie-chart"></i><span class="ms-1 d-none d-sm-inline">Chart version</span><i v-if="collapseClicked" class="fs-5 m-4 bi-arrow-down-circle"></i>
+                            <i v-if="!collapseClicked" class="fs-5 m-4 bi-arrow-up-circle" v-cloak></i>
+                        </a>
+                        <ul class="collapse flex-column ms-1" id="tableModeSideMenu" data-bs-parent="#sideMenu">
+                            <li>
+                                <a asp-controller="Statistics" asp-action="ActivitiesCountChart" class="nav-link d-flex align-items-center gap-2 px-0">
+                                    <i class="fs-5 bi-pie-chart-fill"></i><span class="d-none d-sm-inline">Activities/Count</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a asp-controller="Statistics" asp-action="ActivitiesTimeChart" class="nav-link d-flex align-items-center gap-2 px-0">
+                                    <i class="fs-5 bi-bar-chart-fill"></i><span class="d-none d-sm-inline">Activities/Time</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-10 col-md-8 col-xl-9">
+            <div class="statistics-container">
+                <div class="container">
+                    <div id="chart" ref="chart">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    collapseClicked: true,
+                    colors: [ "#FFFF00", "#00FF00", "#0000FF", "#0099FF", "#CC3399", "#00FF99", "#996600", "#CC00CC" ],
+                };
+            },
+            methods: {
+                drawChart(){
+                    google.charts.load('current', {'packages':['corechart', 'bar']});
+                    google.charts.setOnLoadCallback(() => {
+                        const chartData = [
+                            ["Activity", "Time (h)", { role: "style" }],
+                            @foreach (var item in Model)
+                            {
+                                @: ['@item.Label', @item.Count.ToString(System.Globalization.CultureInfo.InvariantCulture), "#ffffff"],
+                            }                            
+                        ];
+                        for(var i = 1; i < chartData.length; i++){
+                            chartData[i][2] = this.getRandomColor();
+                        }
+                        const chartOptions = {
+                            legend: {
+                                position: "none",
+                            },
+                            width: 1000,
+                            height: 600,
+                            backgroundColor: {
+                                fill: "transparent",
+                            },
+                            vAxis: {
+                                title: chartData[0][1],
+                                titleTextStyle: {
+                                    color: "white",
+                                    bold: true,
+                                    fontSize: 20,
+                                },
+                                textStyle: {
+                                    color: "white",
+                                }
+                            },
+                            hAxis: {
+                                title: chartData[0][0],
+                                titleTextStyle: {
+                                    color: "white",
+                                    bold: true,
+                                    fontSize: 20,
+                                },
+                                textStyle: {
+                                    color: "white",
+                                }
+                            }
+                        };
+                        const data = new google.visualization.arrayToDataTable(chartData);
+                        const options = chartOptions;
+
+                        const chart = new google.visualization.ColumnChart(this.$refs.chart);
+                        chart.draw(data, options);
+                    });
+                },
+                collapseClick() {
+                    this.collapseClicked = !this.collapseClicked;
+                },
+                getRandomColor() {
+                    const randomIndex = Math.floor(Math.random() * this.colors.length);
+                    return this.colors[randomIndex];
+                }
+            },
+            mounted() {
+                this.drawChart();
+            }
+        }).mount("#app");
+    </script>
+}

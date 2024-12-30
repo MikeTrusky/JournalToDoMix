@@ -1,4 +1,6 @@
-﻿@{
+﻿@model List<StatisticsViewModel>
+
+@{
     ViewData["Title"] = "Statistics";
 }
 
@@ -19,18 +21,13 @@
                         </a>
                         <ul class="collapse flex-column ms-1" id="tableModeSideMenu" data-bs-parent="#sideMenu">
                             <li>
-                                <a asp-controller="Statistics" asp-action="Index" class="nav-link d-flex align-items-center gap-2 px-0">
-                                    <i class="fs-5 bi-calendar-plus"></i><span class="d-none d-sm-inline">First</span>
+                                <a asp-controller="Statistics" asp-action="ActivitiesCountChart" class="nav-link d-flex align-items-center gap-2 px-0">
+                                    <i class="fs-5 bi-pie-chart-fill"></i><span class="d-none d-sm-inline">Activities/Count</span>
                                 </a>
                             </li>
                             <li>
-                                <a asp-controller="Statistics" asp-action="Index" class="nav-link d-flex align-items-center gap-2 px-0">
-                                    <i class="fs-5 bi-calendar-week"></i><span class="d-none d-sm-inline">Second</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a asp-controller="Statistics" asp-action="Index" class="nav-link d-flex align-items-center gap-2 px-0">
-                                    <i class="fs-5 bi-calendar-check"></i><span class="d-none d-sm-inline">Third</span>
+                                <a asp-controller="Statistics" asp-action="ActivitiesTimeChart" class="nav-link d-flex align-items-center gap-2 px-0">
+                                    <i class="fs-5 bi-bar-chart-fill"></i><span class="d-none d-sm-inline">Activities/Time</span>
                                 </a>
                             </li>
                         </ul>
@@ -60,30 +57,37 @@
                 }
             },
             methods: {
-                drawChart(){
+                drawChart(){        
                     google.charts.load('current', {'packages':['corechart']});
                     google.charts.setOnLoadCallback(() => {
                         const chartData = [
-                            ["Topping", "Slices"],
-                            ["Mushrooms", 3],
-                            ["Onions", 1],
-                            ["Olives", 1],
-                            ["Zucchini", 1],
-                            ["Pepperoni", 2]
+                            ["Activity", "Count"],
+                            @foreach (var item in Model)
+                            {
+                                @: ['@item.Label', @item.Count.ToString(System.Globalization.CultureInfo.InvariantCulture)],
+                            }
                         ];
-                        const chartOptions = {                            
+                        const chartOptions = {                                       
                             legend: { 
                                 position: "bottom",
+                                alignment: "center",
                                 textStyle: {
-                                  color: "#ffffff",                                  
+                                  color: "white",                                  
                                   bold: true,
                                 },
+                                pagingTextStyle: {
+                                  color: 'white'
+                                },
+                                scrollArrows:{
+                                  activeColor: 'white',
+                                  inactiveColor: 'black'
+                                }
                             },
                             width: 1000,
                             height: 600,
                             backgroundColor: {
                                 fill: "transparent",
-                            },
+                            }                            
                         };                        
                         const data = new google.visualization.arrayToDataTable(chartData);
                         const options = chartOptions;
