@@ -4,6 +4,7 @@ using JournalToDoMix.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JournalToDoMix.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250102163357_AddedRoles")]
+    partial class AddedRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +57,7 @@ namespace JournalToDoMix.Migrations
 
                     b.HasIndex("ActivityTitleId");
 
-                    b.ToTable("Activities", (string)null);
+                    b.ToTable("Activities");
 
                     b.HasData(
                         new
@@ -147,7 +150,7 @@ namespace JournalToDoMix.Migrations
                     b.HasIndex("CategoryName")
                         .IsUnique();
 
-                    b.ToTable("ActivityCategories", (string)null);
+                    b.ToTable("ActivityCategories");
 
                     b.HasData(
                         new
@@ -199,7 +202,7 @@ namespace JournalToDoMix.Migrations
                     b.HasIndex("Title")
                         .IsUnique();
 
-                    b.ToTable("ActivityTitles", (string)null);
+                    b.ToTable("ActivityTitles");
 
                     b.HasData(
                         new

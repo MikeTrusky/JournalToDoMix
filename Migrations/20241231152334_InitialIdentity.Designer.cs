@@ -4,6 +4,7 @@ using JournalToDoMix.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JournalToDoMix.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241231152334_InitialIdentity")]
+    partial class InitialIdentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +57,7 @@ namespace JournalToDoMix.Migrations
 
                     b.HasIndex("ActivityTitleId");
 
-                    b.ToTable("Activities", (string)null);
+                    b.ToTable("Activities");
 
                     b.HasData(
                         new
@@ -147,7 +150,7 @@ namespace JournalToDoMix.Migrations
                     b.HasIndex("CategoryName")
                         .IsUnique();
 
-                    b.ToTable("ActivityCategories", (string)null);
+                    b.ToTable("ActivityCategories");
 
                     b.HasData(
                         new
@@ -199,7 +202,7 @@ namespace JournalToDoMix.Migrations
                     b.HasIndex("Title")
                         .IsUnique();
 
-                    b.ToTable("ActivityTitles", (string)null);
+                    b.ToTable("ActivityTitles");
 
                     b.HasData(
                         new
@@ -336,20 +339,6 @@ namespace JournalToDoMix.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "3883a00e-35ba-4828-90df-7f2b5a79bafd",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "7320f988-1bb6-4d47-ba3f-c68fa46add99",
-                            Name = "User",
-                            NormalizedName = "USER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

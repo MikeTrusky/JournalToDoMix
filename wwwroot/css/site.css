@@ -295,3 +295,23 @@ body {
     justify-content: center;    
 }
 /*#endregion*/
+
+/*#region Accounts*/
+.registerPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+    background-color: #413c3cc1;
+    margin-top: 10vh;
+    border-radius: 30px;
+    padding-top: 3vh;
+    padding-bottom: 3vh;
+    margin-left: 20vh;
+    margin-right: 20vh;    
+}
+
+.registerPanelInputs {
+    display: flex;
+    justify-content: center;
+}
+/*#endregion*/
