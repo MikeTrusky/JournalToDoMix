@@ -4,8 +4,12 @@
     ViewData["Title"] = "Login";
 }
 
-<form asp-action="Login" method="post">
+<form asp-action="Login" method="post">    
     <div class="registerPanel">
+        <div class="col-6 align-self-center">
+            <div asp-validation-summary="All" class="text-danger"></div>
+        </div>
+
         <div class="form-group col-6 align-self-center">
             <label asp-for="Email" class="control-label"></label>
             <input asp-for="Email" class="form-control" />
@@ -31,7 +35,7 @@
             <div class="row justify-content-center">
                 <div class="col-7">
                     <div class="buttonsPanel mt-4">
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="submit" class="btn btn-primary">Login</button>
                         <a asp-controller="Timeline" asp-action="Index" class="btn btn-secondary">Cancel</a>
                     </div>
                 </div>
