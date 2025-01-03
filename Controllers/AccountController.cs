@@ -32,15 +32,17 @@ namespace JournalToDoMix.Controllers
                 return View(loginModel);
             }
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginModel.Password, false);
+            var result = await _signInManager.PasswordSignInAsync(user, loginModel.Password, loginModel.RememberMe, false);
 
-            if (!result.Succeeded)
+            if(result.Succeeded)
+            {                
+                return RedirectToAction("Index", "Timeline");
+            }
+            else
             {
                 ModelState.AddModelError("", "Invalid login attempt");
                 return View(loginModel);
-            }
-
-            return RedirectToAction("Index", "Timeline");
+            }            
         }
         public IActionResult Register()
         {                          

@@ -23,6 +23,14 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    options.SlidingExpiration = false;
+    options.Cookie.IsEssential = true;
+});
+
 builder.Services.AddScoped<IActivitiesServices, ActivitiesServices>();
 
 builder.Services.AddHsts(options =>
