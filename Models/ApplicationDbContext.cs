@@ -27,7 +27,7 @@ namespace JournalToDoMix.Models
             builder.Entity<ActivityCategory>(entity =>
             {
                 entity.HasIndex(e => e.CategoryName).IsUnique();
-            });
+            });            
 
             builder.Entity<Activity>(entity =>
             {
@@ -39,7 +39,12 @@ namespace JournalToDoMix.Models
                 entity.HasOne(a => a.ActivityCategory)
                       .WithMany(c => c.Activities)
                       .HasForeignKey(a => a.ActivityCategoryId)
-                      .OnDelete(DeleteBehavior.Restrict);                
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(a => a.AppUser)
+                      .WithMany(t => t.Activities)
+                      .HasForeignKey(a => a.AppUserId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<ActivityCategory>().HasData(
@@ -61,13 +66,13 @@ namespace JournalToDoMix.Models
             );
 
             builder.Entity<Activity>().HasData(
-                new Activity { Id = 11, ActivityTitleId = 1, ActivityCategoryId = 1, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 10, 18, 15, 0, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(0, 30, 0)},
-                new Activity { Id = 12, ActivityTitleId = 3, ActivityCategoryId = 3, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 10, 23, 10, 50, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(0, 30, 0) },
-                new Activity { Id = 13, ActivityTitleId = 4, ActivityCategoryId = 2, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 10, 23, 10, 0, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(1, 0, 0) },
-                new Activity { Id = 14, ActivityTitleId = 6, ActivityCategoryId = 4, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 12, 3, 13, 30, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(0, 30, 0) },
-                new Activity { Id = 15, ActivityTitleId = 5, ActivityCategoryId = 4, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 12, 3, 13, 0, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(1, 0, 0) },
-                new Activity { Id = 16, ActivityTitleId = 5, ActivityCategoryId = 4, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 12, 3, 13, 0, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(1, 0, 0) },
-                new Activity { Id = 17, ActivityTitleId = 7, ActivityCategoryId = 5, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 11, 5, 10, 0, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(5, 0, 0) }
+                new Activity { Id = 11, ActivityTitleId = 1, ActivityCategoryId = 1, AppUserId = null, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 10, 18, 15, 0, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(0, 30, 0)},
+                new Activity { Id = 12, ActivityTitleId = 3, ActivityCategoryId = 3, AppUserId = null, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 10, 23, 10, 50, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(0, 30, 0) },
+                new Activity { Id = 13, ActivityTitleId = 4, ActivityCategoryId = 2, AppUserId = null, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 10, 23, 10, 0, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(1, 0, 0) },
+                new Activity { Id = 14, ActivityTitleId = 6, ActivityCategoryId = 4, AppUserId = null, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 12, 3, 13, 30, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(0, 30, 0) },
+                new Activity { Id = 15, ActivityTitleId = 5, ActivityCategoryId = 4, AppUserId = null, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 12, 3, 13, 0, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(1, 0, 0) },
+                new Activity { Id = 16, ActivityTitleId = 5, ActivityCategoryId = 4, AppUserId = null, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 12, 3, 13, 0, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(1, 0, 0) },
+                new Activity { Id = 17, ActivityTitleId = 7, ActivityCategoryId = 5, AppUserId = null, Description = "", IsCompleted = true, StartedAt = new DateTime(2024, 11, 5, 10, 0, 0, DateTimeKind.Local), DurationPlanned = new TimeSpan(5, 0, 0) }
             );
 
 
@@ -75,7 +80,7 @@ namespace JournalToDoMix.Models
             builder.Entity<IdentityRole>().HasData(                
                 new IdentityRole { Id = "3883a00e-35ba-4828-90df-7f2b5a79bafd", Name = "Admin", NormalizedName = "ADMIN" },
                 new IdentityRole { Id = "7320f988-1bb6-4d47-ba3f-c68fa46add99", Name = "User", NormalizedName = "USER" }
-                );
+                );            
         }
     }
 }

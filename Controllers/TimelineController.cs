@@ -1,6 +1,6 @@
 ﻿using JournalToDoMix.Models;
+using JournalToDoMix.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace JournalToDoMix.Controllers
@@ -8,12 +8,12 @@ namespace JournalToDoMix.Controllers
     public class TimelineController : Controller
     {
         private readonly ILogger<TimelineController> _logger;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IActivitiesServices _activitiesServices;
 
-        public TimelineController(ILogger<TimelineController> logger, ApplicationDbContext dbContext)
+        public TimelineController(ILogger<TimelineController> logger, IActivitiesServices activitiesServices)
         {
             _logger = logger;
-            _dbContext = dbContext;
+            _activitiesServices = activitiesServices;
         }
         public IActionResult Index(string? startOfWeek, int daysOfWeekToAdd = 0, int daysToShow = 7)
         {
@@ -43,11 +43,7 @@ namespace JournalToDoMix.Controllers
         }
         private Dictionary<DateTime, List<Activity>> GetActivitiesForWeek(DateTime startOfWeek, List<DateTime> daysOfWeek, int daysToShow)
         {
-            var activities = _dbContext.Activities
-                                       .Include(t => t.ActivityTitle)
-                                       .Include(c => c.ActivityCategory)
-                                       .Where(a => a.StartedAt >= startOfWeek && a.StartedAt < startOfWeek.AddDays(daysToShow))
-                                       .ToList();
+            var activities = _activitiesServices.GetFilteredActivities(a => a.StartedAt >= startOfWeek && a.StartedAt < startOfWeek.AddDays(daysToShow));            
 
             return daysOfWeek.ToDictionary(
                    day => day,

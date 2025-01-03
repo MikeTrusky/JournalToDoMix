@@ -14,7 +14,7 @@ namespace JournalToDoMix.Services
             _dbContext = dbContext;
         }
 
-        private IQueryable<Activity> GetFilteredActivities(Expression<Func<Activity, bool>> filter)
+        public IQueryable<Activity> GetFilteredActivities(Expression<Func<Activity, bool>> filter)
         {
             return _dbContext.Activities
                     .Include(t => t.ActivityTitle)
@@ -141,6 +141,32 @@ namespace JournalToDoMix.Services
             }
 
             return hoursPart + minutesPart;
+        }
+
+        public void AddActivity(Activity activity)
+        {
+            _dbContext.Activities.Add(activity);
+            _dbContext.SaveChanges();
+        }
+
+        public Activity? GetActivity(int? id)
+        {
+            return _dbContext.Activities
+                             .Include(t => t.ActivityTitle)
+                             .Include(c => c.ActivityCategory)
+                             .FirstOrDefault(x => x.Id == id);
+        }
+
+        public void RemoveActivity(Activity activity)
+        {
+            _dbContext.Activities.Remove(activity);
+            _dbContext.SaveChanges();
+        }
+
+        public void UpdateActivity(Activity activity)
+        {
+            _dbContext.Activities.Update(activity);
+            _dbContext.SaveChanges();
         }
     }
 }

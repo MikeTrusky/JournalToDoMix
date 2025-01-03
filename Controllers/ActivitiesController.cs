@@ -2,22 +2,27 @@
 using JournalToDoMix.Services;
 using JournalToDoMix.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace JournalToDoMix.Controllers
 {
     public class ActivitiesController : Controller
     {
         private readonly ILogger<ActivitiesController> _logger;
-        private readonly ApplicationDbContext _dbContext;
         private readonly IActivitiesServices _activitiesServices;
+        private readonly IActivitiesTitlesServices _activitiesTitlesServices;
+        private readonly IActivitiesCategoriesServices _activitiesCategoriesServices;
 
-        public ActivitiesController(ILogger<ActivitiesController> logger, ApplicationDbContext dbContext, IActivitiesServices activitiesServices)
+        public ActivitiesController(ILogger<ActivitiesController> logger, 
+                                    IActivitiesServices activitiesServices, 
+                                    IActivitiesTitlesServices activitiesTitlesServices,
+                                    IActivitiesCategoriesServices activitiesCategoriesServices)
         {
             _logger = logger;
-            _dbContext = dbContext;
             _activitiesServices = activitiesServices;
-        }        
+            _activitiesTitlesServices = activitiesTitlesServices;
+            _activitiesCategoriesServices = activitiesCategoriesServices;
+        }
+        #region Index
         public IActionResult Index(ActivityIndexViewModel activityIndexViewModel)
         {
             if (!ModelState.IsValid)
@@ -58,6 +63,7 @@ namespace JournalToDoMix.Controllers
 
             return View(activityIndexViewModel);
         }
+        #endregion
         #region Add new actions
         public IActionResult Add()
         {
@@ -83,7 +89,7 @@ namespace JournalToDoMix.Controllers
             if (!ModelState.IsValid)
                 return View(activityViewModel);
 
-            var title = _dbContext.ActivityTitles.FirstOrDefault(x => x.Title == activityViewModel.Title);
+            var title = _activitiesTitlesServices.FindTitle(activityViewModel.Title);
             if (title == null)
             {
                 title = new ActivityTitle
@@ -91,17 +97,17 @@ namespace JournalToDoMix.Controllers
                     Title = activityViewModel.Title,
                     Description = activityViewModel.Description
                 };
-                _dbContext.ActivityTitles.Add(title);
+                _activitiesTitlesServices.AddTitle(title);                
             }
 
-            var category = _dbContext.ActivityCategories.FirstOrDefault(x => x.CategoryName == activityViewModel.Category);
+            var category = _activitiesCategoriesServices.FindCategory(activityViewModel.Category);
             if (category == null)
             {
                 category = new ActivityCategory
                 {
                     CategoryName = activityViewModel.Category
                 };
-                _dbContext.ActivityCategories.Add(category);
+                _activitiesCategoriesServices.AddCategory(category);
             }
 
             var activity = new Activity
@@ -110,44 +116,34 @@ namespace JournalToDoMix.Controllers
                 ActivityCategory = category,
                 StartedAt = activityViewModel.StartedAt,
                 DurationPlanned = activityViewModel.DurationPlanned,
-                IsCompleted = DateTime.Now > activityViewModel.StartedAt.Add(activityViewModel.DurationPlanned),
+                IsCompleted = DateTime.Now > activityViewModel.StartedAt.Add(activityViewModel.DurationPlanned),                
             };
 
             if (activityViewModel.Description != null && activityViewModel.Description != title.Description)
                 activity.Description = activityViewModel.Description;
 
-            _dbContext.Activities.Add(activity);
-            _dbContext.SaveChanges();
+            _activitiesServices.AddActivity(activity);
 
             return RedirectToAction("Index");
         }
         [HttpGet]
         public async Task<IActionResult> GetActivityTitles(string query)
         {
-            var titles = await _dbContext.ActivityTitles
-                .Where(t => t.Title.StartsWith(query))
-                .Select(t => t.Title)
-                .ToListAsync();
-
+            var titles = await _activitiesTitlesServices.GetTitlesStartsWithAsync(query);
             return Json(titles);
         }
         [HttpGet]
         public async Task<IActionResult> GetCategories()
         {
-            var categories = await _dbContext.ActivityCategories
-                .Select(c => c.CategoryName)
-                .ToListAsync();
-
+            var categories = await _activitiesCategoriesServices.GetCategoriesNamesAsync();
             return Json(categories);
         }
         #endregion
         #region Edit action
         public IActionResult Edit(int? id)
         {
-            var activity = _dbContext.Activities
-                                     .Include(t => t.ActivityTitle)
-                                     .Include(c => c.ActivityCategory)
-                                     .FirstOrDefault(x => x.Id == id);
+            var activity = _activitiesServices.GetActivity(id);
+
             if (activity == null)
                 return NotFound();
 
@@ -169,15 +165,12 @@ namespace JournalToDoMix.Controllers
             if (!ModelState.IsValid)
                 return View(activityViewModel);
 
-            var activity = _dbContext.Activities
-                                     .Include(t => t.ActivityTitle)
-                                     .Include(c => c.ActivityCategory)
-                                     .FirstOrDefault(x => x.Id == activityViewModel.Id);
+            var activity = _activitiesServices.GetActivity(activityViewModel.Id);
 
-            if(activity == null)
+            if (activity == null)
                 return NotFound();
-
-            var title = _dbContext.ActivityTitles.FirstOrDefault(x => x.Title == activityViewModel.Title);
+            
+            var title = _activitiesTitlesServices.FindTitle(activityViewModel.Title);
             if (title == null)
             {
                 title = new ActivityTitle
@@ -185,18 +178,18 @@ namespace JournalToDoMix.Controllers
                     Title = activityViewModel.Title,
                     Description = activityViewModel.Description
                 };
-                _dbContext.ActivityTitles.Add(title);
+                _activitiesTitlesServices.AddTitle(title);                
             }
 
-            var category = _dbContext.ActivityCategories.FirstOrDefault(x => x.CategoryName == activityViewModel.Category);
+            var category = _activitiesCategoriesServices.FindCategory(activityViewModel.Category);            
             if (category == null)
             {
                 category = new ActivityCategory
                 {
                     CategoryName = activityViewModel.Category
                 };
-                _dbContext.ActivityCategories.Add(category);
-            }            
+                _activitiesCategoriesServices.AddCategory(category);
+            }
 
             activity.ActivityTitle = title;
             activity.ActivityCategory = category;
@@ -207,8 +200,7 @@ namespace JournalToDoMix.Controllers
             if (activityViewModel.Description != null && activityViewModel.Description != title.Description)
                 activity.Description = activityViewModel.Description;
 
-            _dbContext.Activities.Update(activity);
-            _dbContext.SaveChanges();
+            _activitiesServices.UpdateActivity(activity);
 
             return RedirectToAction("Index");
         }
@@ -216,11 +208,10 @@ namespace JournalToDoMix.Controllers
         #region Delete action
         public IActionResult Delete(int? id)
         {
-            var activity = _dbContext.Activities.FirstOrDefault(x => x.Id == id);
+            var activity = _activitiesServices.GetActivity(id);            
             if (activity != null)
             {
-                _dbContext.Activities.Remove(activity);
-                _dbContext.SaveChanges();
+                _activitiesServices.RemoveActivity(activity);                
             }
             return RedirectToAction("Index");
         }

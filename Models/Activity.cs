@@ -5,10 +5,7 @@ namespace JournalToDoMix.Models
 {
     public class Activity
     {
-        public int Id { get; set; }
-        //[Required]
-        //[StringLength(20)]
-        //public string ActivityTitle { get; set; }       
+        public int Id { get; set; }     
         public string? Description { get; set; }
         [DisplayName("Is completed")]
         public bool IsCompleted { get; set; }
@@ -24,5 +21,8 @@ namespace JournalToDoMix.Models
 
         public int ActivityCategoryId { get; set; }
         public ActivityCategory ActivityCategory { get; set;} = null!;
+
+        public string? AppUserId { get; set; }
+        public AppUser? AppUser { get; set; }
     }
 }
