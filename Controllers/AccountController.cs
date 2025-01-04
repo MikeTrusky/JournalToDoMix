@@ -1,20 +1,18 @@
 ﻿using JournalToDoMix.Models;
+using JournalToDoMix.Services;
 using JournalToDoMix.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace JournalToDoMix.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        private readonly IUserService _userService;
+        public AccountController(IUserService userService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _userService = userService;
         }
 
         #region Login
@@ -28,17 +26,16 @@ namespace JournalToDoMix.Controllers
         {
             if (!ModelState.IsValid)
                 return View(loginModel);
-
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == loginModel.Email.ToLower());
+                        
+            var user = await _userService.FindUserByEmailAsync(loginModel.Email.ToLower());
             if (user == null)
             {
                 ModelState.AddModelError("loginError", "Invalid login attempt");
                 return View(loginModel);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user, loginModel.Password, loginModel.RememberMe, false);
-
-            if (!result.Succeeded)
+            var signInResult = await _userService.SignInWithPasswordAsync(user, loginModel.Password, loginModel.RememberMe, false);
+            if (!signInResult.Succeeded)
             {
                 ModelState.AddModelError("loginError", "Invalid login attempt");
                 return View(loginModel);
@@ -61,7 +58,7 @@ namespace JournalToDoMix.Controllers
             if (!ModelState.IsValid)
                 return View(registerModel);
 
-            if (await UserExists(registerModel.UserName, registerModel.Email))
+            if (await UserExistsAsync(registerModel.UserName, registerModel.Email))
                 return View(registerModel);
 
             var appUser = new AppUser
@@ -69,37 +66,35 @@ namespace JournalToDoMix.Controllers
                 UserName = registerModel.UserName,
                 Email = registerModel.Email
             };
-
-            var createUserResult = await _userManager.CreateAsync(appUser, registerModel.Password);
-
+            
+            var createUserResult = await _userService.CreateUserAsync(appUser, registerModel.Password);
             if (!createUserResult.Succeeded)
             {
                 AddErrors(createUserResult, "registerError");
                 return View(registerModel);
             }
-
-            var roleResult = await _userManager.AddToRoleAsync(appUser, "User");
-
+            
+            var roleResult = await _userService.AddUserToRoleAsync(appUser, "User");
             if (!roleResult.Succeeded)
             {
                 AddErrors(roleResult, "registerError");
                 return View(registerModel);
             }
-
-            await _signInManager.SignInAsync(appUser, isPersistent: false);
+            
+            await _userService.SignInAsync(appUser, isPersistent: false);
             return RedirectToAction("Index", "Timeline");
         }
 
-        private async Task<bool> UserExists(string userName, string email)
+        private async Task<bool> UserExistsAsync(string userName, string email)
         {
             bool error = false;
-            if (await _userManager.FindByNameAsync(userName) != null)
+            if (await _userService.FindUserByNameAsync(userName) != null)
             {
                 ModelState.AddModelError("UserName", "This username is already taken.");
                 error = true;
             }
 
-            if (await _userManager.FindByEmailAsync(email) != null)
+            if (await _userService.FindUserByEmailAsync(email) != null)
             {
                 ModelState.AddModelError("Email", "This email is already taken.");
                 error = true;
@@ -120,7 +115,7 @@ namespace JournalToDoMix.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            await _userService.SignOutAsync();
             return RedirectToAction("Index", "Timeline");
         }
     }

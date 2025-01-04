@@ -27,5 +27,20 @@ namespace JournalToDoMix.Services
                                    .Select(c => c.CategoryName)
                                    .ToListAsync();
         }
+
+        public ActivityCategory GetCategory(string categoryName)
+        {
+            var activityCategory = FindCategory(categoryName);
+            if (activityCategory == null)
+            {
+                activityCategory = new ActivityCategory
+                {
+                    CategoryName = categoryName
+                };
+                AddCategory(activityCategory);
+            }
+
+            return activityCategory;
+        }
     }
 }

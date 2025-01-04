@@ -1,6 +1,5 @@
 ﻿using JournalToDoMix.Models;
 using JournalToDoMix.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
@@ -10,13 +9,13 @@ namespace JournalToDoMix.Controllers
     {
         private readonly ILogger<TimelineController> _logger;
         private readonly IActivitiesServices _activitiesServices;
-        private readonly UserManager<AppUser> _userManager;
+        private readonly IUserService _userService;
 
-        public TimelineController(ILogger<TimelineController> logger, IActivitiesServices activitiesServices, UserManager<AppUser> userManager)
+        public TimelineController(ILogger<TimelineController> logger, IActivitiesServices activitiesServices, IUserService userService)
         {
             _logger = logger;
             _activitiesServices = activitiesServices;
-            _userManager = userManager;
+            _userService = userService;
         }
         public async Task<IActionResult> Index(string? startOfWeek, int daysOfWeekToAdd = 0, int daysToShow = 7)
         {                        
@@ -34,7 +33,7 @@ namespace JournalToDoMix.Controllers
             startOfCurrentWeek = startOfCurrentWeek.AddDays(daysOfWeekToAdd);
 
             ViewBag.DaysOfWeek = GetDaysOfWeek(startOfCurrentWeek, daysToShow);
-            ViewBag.ActivitiesByDay = await GetActivitiesForWeek(startOfCurrentWeek, ViewBag.DaysOfWeek, daysToShow);
+            ViewBag.ActivitiesByDay = await GetActivitiesBetweenDaysAsync(startOfCurrentWeek, ViewBag.DaysOfWeek, daysToShow);
 
             return View();
         }
@@ -44,9 +43,9 @@ namespace JournalToDoMix.Controllers
                              .Select(offset => startOfWeek.AddDays(offset))
                              .ToList();
         }
-        private async Task<Dictionary<DateTime, List<Activity>>> GetActivitiesForWeek(DateTime startOfWeek, List<DateTime> daysOfWeek, int daysToShow)
-        {
-            var user = await _userManager.GetUserAsync(User);
+        private async Task<Dictionary<DateTime, List<Activity>>> GetActivitiesBetweenDaysAsync(DateTime startOfWeek, List<DateTime> daysOfWeek, int daysToShow)
+        {            
+            var user = await _userService.GetCurrentUserAsync(User);
             var activities = _activitiesServices.GetActivitiesBetweenDays(startOfWeek, daysToShow, user?.Id);
 
             return daysOfWeek.ToDictionary(

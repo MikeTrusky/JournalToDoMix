@@ -92,30 +92,11 @@ namespace JournalToDoMix.Controllers
         public async Task<IActionResult> Add(ActivityCreateViewModel activityViewModel)
         {
             if (!ModelState.IsValid)
-                return View(activityViewModel);
-
-            var title = _activitiesTitlesServices.FindTitle(activityViewModel.Title);
-            if (title == null)
-            {
-                title = new ActivityTitle
-                {
-                    Title = activityViewModel.Title,
-                    Description = activityViewModel.Description
-                };
-                _activitiesTitlesServices.AddTitle(title);                
-            }
-
-            var category = _activitiesCategoriesServices.FindCategory(activityViewModel.Category);
-            if (category == null)
-            {
-                category = new ActivityCategory
-                {
-                    CategoryName = activityViewModel.Category
-                };
-                _activitiesCategoriesServices.AddCategory(category);
-            }
+                return View(activityViewModel);            
 
             var user = await _userService.GetCurrentUserAsync(User);
+            var title = _activitiesTitlesServices.GetTitle(activityViewModel.Title, activityViewModel.Description);
+            var category = _activitiesCategoriesServices.GetCategory(activityViewModel.Category);
 
             var activity = new Activity
             {
@@ -176,30 +157,11 @@ namespace JournalToDoMix.Controllers
             var activity = _activitiesServices.GetActivity(activityViewModel.Id);
 
             if (activity == null)
-                return NotFound();
-            
-            var title = _activitiesTitlesServices.FindTitle(activityViewModel.Title);
-            if (title == null)
-            {
-                title = new ActivityTitle
-                {
-                    Title = activityViewModel.Title,
-                    Description = activityViewModel.Description
-                };
-                _activitiesTitlesServices.AddTitle(title);                
-            }
-
-            var category = _activitiesCategoriesServices.FindCategory(activityViewModel.Category);            
-            if (category == null)
-            {
-                category = new ActivityCategory
-                {
-                    CategoryName = activityViewModel.Category
-                };
-                _activitiesCategoriesServices.AddCategory(category);
-            }
+                return NotFound();                       
 
             var user = await _userService.GetCurrentUserAsync(User);
+            var title = _activitiesTitlesServices.GetTitle(activityViewModel.Title, activityViewModel.Description);
+            var category = _activitiesCategoriesServices.GetCategory(activityViewModel.Category);
 
             activity.ActivityTitle = title;
             activity.ActivityCategory = category;
@@ -219,13 +181,13 @@ namespace JournalToDoMix.Controllers
         #region Delete action
         public IActionResult Delete(int? id)
         {
-            var activity = _activitiesServices.GetActivity(id);            
+            var activity = _activitiesServices.GetActivity(id);
+            
             if (activity != null)
-            {
-                _activitiesServices.RemoveActivity(activity);                
-            }
+                _activitiesServices.RemoveActivity(activity);
+
             return RedirectToAction("Index");
         }
-        #endregion
+        #endregion        
     }
 }
