@@ -34,6 +34,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddScoped<IActivitiesServices, ActivitiesServices>();
 builder.Services.AddScoped<IActivitiesTitlesServices, ActivitiesTitlesServices>();
 builder.Services.AddScoped<IActivitiesCategoriesServices, ActivitiesCategoriesServices>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddHsts(options =>
 {

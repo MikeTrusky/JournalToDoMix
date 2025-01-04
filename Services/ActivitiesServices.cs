@@ -14,7 +14,7 @@ namespace JournalToDoMix.Services
             _dbContext = dbContext;
         }
 
-        public IQueryable<Activity> GetFilteredActivities(Expression<Func<Activity, bool>> filter)
+        private IQueryable<Activity> GetFilteredActivities(Expression<Func<Activity, bool>> filter)
         {
             return _dbContext.Activities
                     .Include(t => t.ActivityTitle)
@@ -24,10 +24,10 @@ namespace JournalToDoMix.Services
         }
 
         #region CurrentActivities
-        public List<Activity> GetCurrentActivities(DateTime now, int pageSize, int pageNumber)
+        public List<Activity> GetCurrentActivities(DateTime now, int pageSize, int pageNumber, string? userId)
         {
             var skipNumber = (pageNumber - 1) * pageSize;
-            return GetFilteredActivities(a => a.StartedAt <= now && !a.IsCompleted)
+            return GetFilteredActivities(a => a.StartedAt <= now && !a.IsCompleted && a.AppUserId == userId)
                     .AsEnumerable()
                     .Where(a => a.StartedAt.Add(a.DurationPlanned) >= now)
                     .Skip(skipNumber)
@@ -35,9 +35,9 @@ namespace JournalToDoMix.Services
                     .ToList();
         }
 
-        public int GetCurrentActivitiesCount(DateTime now)
+        public int GetCurrentActivitiesCount(DateTime now, string? userId)
         {
-            return GetFilteredActivities(a => a.StartedAt <= now && !a.IsCompleted)
+            return GetFilteredActivities(a => a.StartedAt <= now && !a.IsCompleted && a.AppUserId == userId)
                     .AsEnumerable()
                     .Where(a => a.StartedAt.Add(a.DurationPlanned) >= now)
                     .Count();
@@ -45,43 +45,44 @@ namespace JournalToDoMix.Services
         #endregion
 
         #region PlannedActivities
-        public List<Activity> GetPlannedActivities(DateTime now, int pageSize, int pageNumber)
+        public List<Activity> GetPlannedActivities(DateTime now, int pageSize, int pageNumber, string? userId)
         {
             var skipNumber = (pageNumber - 1) * pageSize;
-            return GetFilteredActivities(a => a.StartedAt > now)
+            return GetFilteredActivities(a => a.StartedAt > now && a.AppUserId == userId)
                     .Skip(skipNumber)
                     .Take(pageSize)
                     .ToList();            
         }
 
-        public int GetPlannedActivitiesCount(DateTime now)
+        public int GetPlannedActivitiesCount(DateTime now, string? userId)
         {
-            return GetFilteredActivities(a => a.StartedAt > now)
+            return GetFilteredActivities(a => a.StartedAt > now && a.AppUserId == userId)
                     .Count();
         }
         #endregion
 
         #region PreviousActivities
-        public List<Activity> GetPreviousActivities(DateTime now, int pageSize, int pageNumber)
+        public List<Activity> GetPreviousActivities(DateTime now, int pageSize, int pageNumber, string? userId)
         {
             var skipNumber = (pageNumber - 1) * pageSize;
-            return GetFilteredActivities(a => a.IsCompleted)
+            return GetFilteredActivities(a => a.IsCompleted && a.AppUserId == userId)
                     .Skip(skipNumber)
                     .Take(pageSize)
                     .ToList();            
         }
 
-        public int GetPreviousActivitiesCount(DateTime now)
+        public int GetPreviousActivitiesCount(DateTime now, string? userId)
         {
-            return GetFilteredActivities(a => a.IsCompleted)
+            return GetFilteredActivities(a => a.IsCompleted && a.AppUserId == userId)
                     .Count();
         }
         #endregion
 
         #region Stats
-        public List<StatisticsViewModel> GetEachActivityCount()
+        public List<StatisticsViewModel> GetEachActivityCount(string? userId)
         {
             return _dbContext.Activities
+                    .Where(a => a.AppUserId == userId)
                     .GroupBy(a => a.ActivityTitle)
                     .Select(g => new StatisticsViewModel
                     {
@@ -91,9 +92,10 @@ namespace JournalToDoMix.Services
                     .ToList();
         }
 
-        public List<StatisticsViewModel> GetEachActivityTime()
+        public List<StatisticsViewModel> GetEachActivityTime(string? userId)
         {
             return _dbContext.Activities
+                    .Where(a => a.AppUserId == userId)
                     .GroupBy(a => a.ActivityTitle)
                     .AsEnumerable()
                     .Select(g => new StatisticsViewModel
@@ -105,10 +107,10 @@ namespace JournalToDoMix.Services
         }
         #endregion
 
-        public void UpdateActivitiesCompletedStatus(DateTime now)
+        public void UpdateActivitiesCompletedStatus(DateTime now, string? userId)
         {
             var incompletedActivities = _dbContext.Activities
-                            .Where(a => !a.IsCompleted)
+                            .Where(a => !a.IsCompleted && a.AppUserId == userId)
                             .ToList();
 
             bool hasChange = false;
@@ -167,6 +169,11 @@ namespace JournalToDoMix.Services
         {
             _dbContext.Activities.Update(activity);
             _dbContext.SaveChanges();
+        }
+
+        public IQueryable<Activity> GetActivitiesBetweenDays(DateTime startOfWeek, int daysToShow, string? userId)
+        {
+            return GetFilteredActivities(a => a.StartedAt >= startOfWeek && a.StartedAt < startOfWeek.AddDays(daysToShow) && a.AppUserId == userId);
         }
     }
 }

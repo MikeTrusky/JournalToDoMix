@@ -1,5 +1,6 @@
 ﻿using JournalToDoMix.Models;
 using JournalToDoMix.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
@@ -9,14 +10,16 @@ namespace JournalToDoMix.Controllers
     {
         private readonly ILogger<TimelineController> _logger;
         private readonly IActivitiesServices _activitiesServices;
+        private readonly UserManager<AppUser> _userManager;
 
-        public TimelineController(ILogger<TimelineController> logger, IActivitiesServices activitiesServices)
+        public TimelineController(ILogger<TimelineController> logger, IActivitiesServices activitiesServices, UserManager<AppUser> userManager)
         {
             _logger = logger;
             _activitiesServices = activitiesServices;
+            _userManager = userManager;
         }
-        public IActionResult Index(string? startOfWeek, int daysOfWeekToAdd = 0, int daysToShow = 7)
-        {
+        public async Task<IActionResult> Index(string? startOfWeek, int daysOfWeekToAdd = 0, int daysToShow = 7)
+        {                        
             DateTime startOfCurrentWeek;
             if(ModelState.IsValid && !string.IsNullOrEmpty(startOfWeek) && DateTime.TryParse(startOfWeek, CultureInfo.InvariantCulture, out var parsedData))
             {
@@ -31,7 +34,7 @@ namespace JournalToDoMix.Controllers
             startOfCurrentWeek = startOfCurrentWeek.AddDays(daysOfWeekToAdd);
 
             ViewBag.DaysOfWeek = GetDaysOfWeek(startOfCurrentWeek, daysToShow);
-            ViewBag.ActivitiesByDay = GetActivitiesForWeek(startOfCurrentWeek, ViewBag.DaysOfWeek, daysToShow);
+            ViewBag.ActivitiesByDay = await GetActivitiesForWeek(startOfCurrentWeek, ViewBag.DaysOfWeek, daysToShow);
 
             return View();
         }
@@ -41,9 +44,10 @@ namespace JournalToDoMix.Controllers
                              .Select(offset => startOfWeek.AddDays(offset))
                              .ToList();
         }
-        private Dictionary<DateTime, List<Activity>> GetActivitiesForWeek(DateTime startOfWeek, List<DateTime> daysOfWeek, int daysToShow)
+        private async Task<Dictionary<DateTime, List<Activity>>> GetActivitiesForWeek(DateTime startOfWeek, List<DateTime> daysOfWeek, int daysToShow)
         {
-            var activities = _activitiesServices.GetFilteredActivities(a => a.StartedAt >= startOfWeek && a.StartedAt < startOfWeek.AddDays(daysToShow));            
+            var user = await _userManager.GetUserAsync(User);
+            var activities = _activitiesServices.GetActivitiesBetweenDays(startOfWeek, daysToShow, user?.Id);
 
             return daysOfWeek.ToDictionary(
                    day => day,

@@ -11,19 +11,22 @@ namespace JournalToDoMix.Controllers
         private readonly IActivitiesServices _activitiesServices;
         private readonly IActivitiesTitlesServices _activitiesTitlesServices;
         private readonly IActivitiesCategoriesServices _activitiesCategoriesServices;
+        private readonly IUserService _userService;
 
         public ActivitiesController(ILogger<ActivitiesController> logger, 
                                     IActivitiesServices activitiesServices, 
                                     IActivitiesTitlesServices activitiesTitlesServices,
-                                    IActivitiesCategoriesServices activitiesCategoriesServices)
+                                    IActivitiesCategoriesServices activitiesCategoriesServices,
+                                    IUserService userService)
         {
             _logger = logger;
             _activitiesServices = activitiesServices;
             _activitiesTitlesServices = activitiesTitlesServices;
             _activitiesCategoriesServices = activitiesCategoriesServices;
+            _userService = userService;
         }
         #region Index
-        public IActionResult Index(ActivityIndexViewModel activityIndexViewModel)
+        public async Task<IActionResult> Index(ActivityIndexViewModel activityIndexViewModel)
         {
             if (!ModelState.IsValid)
                 return RedirectToAction("Index");
@@ -32,22 +35,24 @@ namespace JournalToDoMix.Controllers
 
             var now = DateTime.Now;
 
-            _activitiesServices.UpdateActivitiesCompletedStatus(now);
+            var user = await _userService.GetCurrentUserAsync(User);
+
+            _activitiesServices.UpdateActivitiesCompletedStatus(now, user?.Id);
 
             try
             {
                 activityIndexViewModel.Activities = activityIndexViewModel.ActivityType switch
                 {
-                    "Planned" => _activitiesServices.GetPlannedActivities(now, activityIndexViewModel.PageSize, activityIndexViewModel.PageNumber),
-                    "Current" => _activitiesServices.GetCurrentActivities(now, activityIndexViewModel.PageSize, activityIndexViewModel.PageNumber),
-                    "Previous" => _activitiesServices.GetPreviousActivities(now, activityIndexViewModel.PageSize, activityIndexViewModel.PageNumber),
+                    "Planned" => _activitiesServices.GetPlannedActivities(now, activityIndexViewModel.PageSize, activityIndexViewModel.PageNumber, user?.Id),
+                    "Current" => _activitiesServices.GetCurrentActivities(now, activityIndexViewModel.PageSize, activityIndexViewModel.PageNumber, user?.Id),
+                    "Previous" => _activitiesServices.GetPreviousActivities(now, activityIndexViewModel.PageSize, activityIndexViewModel.PageNumber, user?.Id),
                     _ => throw new InvalidOperationException()
                 };
                 activityIndexViewModel.AllPagesNumber = activityIndexViewModel.ActivityType switch
                 {
-                    "Planned" => (int)Math.Ceiling((float)_activitiesServices.GetPlannedActivitiesCount(now) / activityIndexViewModel.PageSize),
-                    "Current" => (int)Math.Ceiling((float)_activitiesServices.GetCurrentActivitiesCount(now) / activityIndexViewModel.PageSize),
-                    "Previous" => (int)Math.Ceiling((float)_activitiesServices.GetPreviousActivitiesCount(now) / activityIndexViewModel.PageSize),
+                    "Planned" => (int)Math.Ceiling((float)_activitiesServices.GetPlannedActivitiesCount(now, user?.Id) / activityIndexViewModel.PageSize),
+                    "Current" => (int)Math.Ceiling((float)_activitiesServices.GetCurrentActivitiesCount(now, user?.Id) / activityIndexViewModel.PageSize),
+                    "Previous" => (int)Math.Ceiling((float)_activitiesServices.GetPreviousActivitiesCount(now, user?.Id) / activityIndexViewModel.PageSize),
                     _ => throw new InvalidOperationException()
                 };
             }
@@ -84,7 +89,7 @@ namespace JournalToDoMix.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Add(ActivityCreateViewModel activityViewModel)
+        public async Task<IActionResult> Add(ActivityCreateViewModel activityViewModel)
         {
             if (!ModelState.IsValid)
                 return View(activityViewModel);
@@ -110,13 +115,16 @@ namespace JournalToDoMix.Controllers
                 _activitiesCategoriesServices.AddCategory(category);
             }
 
+            var user = await _userService.GetCurrentUserAsync(User);
+
             var activity = new Activity
             {
                 ActivityTitle = title,
                 ActivityCategory = category,
                 StartedAt = activityViewModel.StartedAt,
                 DurationPlanned = activityViewModel.DurationPlanned,
-                IsCompleted = DateTime.Now > activityViewModel.StartedAt.Add(activityViewModel.DurationPlanned),                
+                IsCompleted = DateTime.Now > activityViewModel.StartedAt.Add(activityViewModel.DurationPlanned),
+                AppUser = user
             };
 
             if (activityViewModel.Description != null && activityViewModel.Description != title.Description)
@@ -160,7 +168,7 @@ namespace JournalToDoMix.Controllers
             return View(activityViewModel);
         }
         [HttpPost]
-        public IActionResult Edit(ActivityEditViewModel activityViewModel)
+        public async Task<IActionResult> Edit(ActivityEditViewModel activityViewModel)
         {
             if (!ModelState.IsValid)
                 return View(activityViewModel);
@@ -191,11 +199,14 @@ namespace JournalToDoMix.Controllers
                 _activitiesCategoriesServices.AddCategory(category);
             }
 
+            var user = await _userService.GetCurrentUserAsync(User);
+
             activity.ActivityTitle = title;
             activity.ActivityCategory = category;
             activity.StartedAt = activityViewModel.StartedAt;
             activity.DurationPlanned = activityViewModel.DurationPlanned;
             activity.IsCompleted = DateTime.Now > activity.StartedAt.Add(activity.DurationPlanned);
+            activity.AppUser = user;
 
             if (activityViewModel.Description != null && activityViewModel.Description != title.Description)
                 activity.Description = activityViewModel.Description;

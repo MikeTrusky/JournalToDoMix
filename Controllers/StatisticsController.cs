@@ -1,4 +1,6 @@
-﻿using JournalToDoMix.Services;
+﻿using JournalToDoMix.Models;
+using JournalToDoMix.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JournalToDoMix.Controllers
@@ -6,22 +8,26 @@ namespace JournalToDoMix.Controllers
     public class StatisticsController : Controller
     {        
         private readonly IActivitiesServices _activitiesServices;
-        public StatisticsController(IActivitiesServices activitiesServices)
+        private readonly UserManager<AppUser> _userManager;
+        public StatisticsController(IActivitiesServices activitiesServices, UserManager<AppUser> userManager)
         {            
             _activitiesServices = activitiesServices;
+            _userManager = userManager;
         }
         public IActionResult Index()
         {
             return RedirectToAction(nameof(ActivitiesCountChart));
         }
-        public IActionResult ActivitiesCountChart()
+        public async Task<IActionResult> ActivitiesCountChart()
         {
-            var eachActivityCount = _activitiesServices.GetEachActivityCount();
+            var user = await _userManager.GetUserAsync(User);
+            var eachActivityCount = _activitiesServices.GetEachActivityCount(user?.Id);
             return View(eachActivityCount);
         }
-        public IActionResult ActivitiesTimeChart()
+        public async Task<IActionResult> ActivitiesTimeChart()
         {
-            var eachActivityTime = _activitiesServices.GetEachActivityTime();
+            var user = await _userManager.GetUserAsync(User);
+            var eachActivityTime = _activitiesServices.GetEachActivityTime(user?.Id);
             return View(eachActivityTime);
         }        
     }
