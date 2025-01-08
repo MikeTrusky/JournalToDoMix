@@ -5,7 +5,7 @@
 
 ## Table of Contents
 * [About The Project](#about-the-project)
-* [Technologies Used](#technologies-used)
+* [Built with](#built-with)
 * [Features](#features)
 * [Screenshots](#screenshots)
 * [Usage](#usage)
@@ -25,7 +25,7 @@ activity statistics, such as the total hours spent on specific activities and th
 
 Users can create their own account through registration process, and upon logging in, they gain access to their own private set of activities.
 
-### Built With
+## Built With
 
 * Backend:
   - ASP.NET Core MVC
